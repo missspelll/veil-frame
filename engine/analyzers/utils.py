@@ -9,7 +9,7 @@ from typing import Any
 
 _thread_lock = threading.Lock()
 
-MAX_PENDING_TIME = int(os.getenv("MAX_PENDING_TIME", "300"))  # 5 minutes by default
+MAX_PENDING_TIME = int(os.getenv("MAX_PENDING_TIME", "1800"))  # 30 minutes by default
 
 
 def update_data(

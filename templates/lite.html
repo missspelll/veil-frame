@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞-𝗅𝐢𝗍𝐞 ✦</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='lite.css') }}">
+</head>
+<body>
+  <div class="bg"></div>
+  <header class="site-header">
+    <div>
+      <h1>𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞-𝗅𝐢𝗍𝐞 ✦</h1>
+      <p class="lede">𝖿𝐚𝗌𝗍 𝗅𝗌𝖻 𝗐𝐨𝗋𝗄𝗌𝗉𝐚𝖼𝐞: `simple_lsb` + `advanced_lsb` 𝐞𝗇𝖼𝐨𝖽𝖾 𝐚𝗇𝖽 𝗆𝐢𝗇𝐢𝗆𝐚𝗅 𝖽𝐞𝖼𝐨𝖽𝐞.</p>
+      <p class="lede-mini"><a href="/">𝗈𝗉𝐞𝗇 𝖿𝐮𝗅𝗅 𝗐𝗈𝗋𝗄𝗌𝗁𝐨𝗉 →</a></p>
+      <p class="lede-mini">𝗎𝗇𝐢𝖼𝗈𝖽𝐞 𝗀𝗅𝗒𝗉𝗁 𝗆𝐚𝗉: <span class="mono-path">static/lite.js :: unicode_lower</span></p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-head">
+        <p class="eyebrow">𝐞𝗇𝖼𝐨𝖽𝐞</p>
+        <h2>𝗊𝐮𝐢𝖼𝗄 𝗉𝐚𝗒𝗅𝐨𝐚𝖽 𝐞𝗆𝖻𝐞𝖽𝖽𝐢𝗇𝗀</h2>
+      </div>
+      <form id="lite-encode-form" class="form-grid">
+        <label class="field">
+          <span>𝖼𝐚𝗋𝗋𝗂𝐞𝗋 𝐢𝗆𝐚𝗀𝐞</span>
+          <input type="file" id="lite-carrier-image" name="image" accept="image/png, image/jpeg" required>
+        </label>
+
+        <label class="field">
+          <span>𝗆𝐨𝖽𝐞</span>
+          <select id="lite-encode-method" name="encodeMethod">
+            <option value="simple_lsb">𝗌𝐢𝗆𝗉𝗅𝐞_𝗅𝗌𝖻</option>
+            <option value="advanced_lsb">𝐚𝖽𝗏𝐚𝗇𝖼𝐞𝖽_𝗅𝗌𝖻 (𝗉𝐞𝗋-𝖼𝗁𝐚𝗇𝗇𝐞𝗅)</option>
+          </select>
+        </label>
+
+        <div class="field" id="lite-simple-panel">
+          <span>𝗌𝐢𝗆𝗉𝗅𝐞 𝗉𝐚𝗒𝗅𝐨𝐚𝖽</span>
+          <div class="inline-row">
+            <label><input type="radio" name="payloadMode" value="text" checked>𝗍𝐞𝗑𝗍</label>
+            <label><input type="radio" name="payloadMode" value="file">𝖿𝐢𝗅𝐞</label>
+          </div>
+          <textarea name="text" id="lite-text" rows="4" placeholder="𝗁𝐢𝖽𝖽𝐞𝗇 𝗆𝐞𝗌𝗌𝐚𝗀𝐞"></textarea>
+          <input type="file" id="lite-payload-file" name="payload">
+          <label>
+            <span>𝗉𝗅𝐚𝗇𝐞</span>
+            <select name="plane">
+              <option value="RGB" selected>𝗋𝗀𝖻</option>
+              <option value="R">𝗋</option>
+              <option value="G">𝗀</option>
+              <option value="B">𝖻</option>
+              <option value="A">𝐚</option>
+              <option value="RGBA">𝗋𝗀𝖻𝐚</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field hidden" id="lite-advanced-panel">
+          <span>𝐚𝖽𝗏𝐚𝗇𝖼𝐞𝖽 𝗉𝐞𝗋-𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝗉𝐚𝗒𝗅𝐨𝐚𝖽𝗌</span>
+          <div class="channel-grid" id="lite-channel-grid">
+            <div class="channel" data-channel="R">
+              <label><input type="checkbox" class="enabled" checked>𝗋</label>
+              <textarea class="text" rows="3" placeholder="𝗍𝐞𝗑𝗍 𝖿𝗈𝗋 𝗋"></textarea>
+              <input type="file" class="file" />
+            </div>
+            <div class="channel" data-channel="G">
+              <label><input type="checkbox" class="enabled" checked>𝗀</label>
+              <textarea class="text" rows="3" placeholder="𝗍𝐞𝗑𝗍 𝖿𝗈𝗋 𝗀"></textarea>
+              <input type="file" class="file" />
+            </div>
+            <div class="channel" data-channel="B">
+              <label><input type="checkbox" class="enabled" checked>𝖻</label>
+              <textarea class="text" rows="3" placeholder="𝗍𝐞𝗑𝗍 𝖿𝗈𝗋 𝖻"></textarea>
+              <input type="file" class="file" />
+            </div>
+            <div class="channel" data-channel="A">
+              <label><input type="checkbox" class="enabled">𝐚</label>
+              <textarea class="text" rows="3" placeholder="𝗍𝐞𝗑𝗍 𝖿𝗈𝗋 𝐚"></textarea>
+              <input type="file" class="file" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field action-row">
+          <div class="inline-row output-format" role="group" aria-label="output format">
+            <span>𝐨𝐮𝗍𝗉𝐮𝗍</span>
+            <label><input type="radio" name="outputFormat" value="png" checked>𝗉𝗇𝗀</label>
+            <label><input type="radio" name="outputFormat" value="jpeg">𝗃𝗉𝐞𝗀</label>
+          </div>
+          <button type="submit" class="primary">𝐞𝗇𝖼𝐨𝖽𝐞</button>
+        </div>
+      </form>
+      <div id="lite-encode-output" class="output"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <p class="eyebrow">𝖽𝐞𝖼𝐨𝖽𝐞</p>
+        <h2>𝗉𝗅𝐚𝗇𝐞-𝖿𝗂𝗋𝗌𝗍 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝗂𝐨𝗇</h2>
+      </div>
+      <form id="lite-decode-form" class="form-grid">
+        <label class="field">
+          <span>𝐢𝗆𝐚𝗀𝐞 𝗍𝐨 𝐚𝗇𝐚𝗅𝗒𝗓𝐞</span>
+          <input type="file" id="lite-analyze-image" name="image" accept="image/png, image/jpeg" required>
+        </label>
+        <div class="field action-row">
+          <button type="submit" class="primary">𝗋𝐮𝗇 𝗅𝗂𝗍𝐞 𝖽𝐞𝖼𝐨𝖽𝐞</button>
+          <div id="lite-analysis-timer" class="timer">𝗌𝗍𝐚𝗍𝐮𝗌: 𝐢𝖽𝗅𝐞 · 00:00</div>
+        </div>
+        <div class="field tooling-status">
+          <span>𝐚𝖼𝗍𝗂𝗏𝐞 𝗅𝗂𝗍𝐞 𝗍𝐨𝐨𝗅𝗌</span>
+          <div id="lite-tool-status"></div>
+        </div>
+      </form>
+      <div id="lite-decode-output" class="output"></div>
+    </section>
+  </main>
+
+  <script type="module" src="{{ url_for('static', filename='lite.js') }}"></script>
+</body>
+</html>

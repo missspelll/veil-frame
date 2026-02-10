@@ -5,6 +5,8 @@ from typing import Optional
 
 from flask import Flask, jsonify, render_template, request
 
+from engine.analyzer_catalog import default_selected_for_profile, list_analyzer_catalog
+from engine.analysis_profiles import DEFAULT_PROFILE, list_profiles
 from engine.decoder import run_analysis
 from engine.encoder import (
     as_data_url,
@@ -20,6 +22,7 @@ from engine.encoder import (
     encode_spread_spectrum_payload,
     normalize_output_format,
 )
+from engine.lite_decoder import run_lite_analysis
 from engine.tooling import get_tool_status
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -42,12 +45,74 @@ def index() -> str:
     return render_template("index.html")
 
 
+@app.route("/lite")
+def lite_index() -> str:
+    return render_template("lite.html")
+
+
 @app.get("/api/tools")
 def api_tools():
     try:
         return jsonify({"tools": get_tool_status()})
     except Exception as exc:
         return jsonify({"error": f"Failed to get tool status: {str(exc)}"}), 500
+
+
+@app.get("/api/profiles")
+def api_profiles():
+    try:
+        return jsonify(
+            {
+                "default_profile": DEFAULT_PROFILE,
+                "profiles": list_profiles(),
+                "analyzers": list_analyzer_catalog(DEFAULT_PROFILE),
+                "default_selected_tools": default_selected_for_profile(DEFAULT_PROFILE),
+            }
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Failed to get analysis profiles: {str(exc)}"}), 500
+
+
+@app.get("/api/analyzers")
+def api_analyzers():
+    profile = request.args.get("profile") or DEFAULT_PROFILE
+    try:
+        return jsonify(
+            {
+                "profile": profile,
+                "analyzers": list_analyzer_catalog(profile),
+                "default_selected_tools": default_selected_for_profile(profile),
+            }
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Failed to get analyzer catalog: {str(exc)}"}), 500
+
+
+@app.get("/api/lite/tools")
+def api_lite_tools():
+    tools = {
+        "plane_decoder": {
+            "available": True,
+            "path": "python",
+            "mode": "lite",
+        },
+        "simple_lsb": {
+            "available": True,
+            "path": "python",
+            "mode": "lite",
+        },
+        "simple_zlib": {
+            "available": True,
+            "path": "python",
+            "mode": "lite",
+        },
+        "advanced_lsb": {
+            "available": True,
+            "path": "python",
+            "mode": "lite",
+        },
+    }
+    return jsonify({"tools": tools})
 
 
 @app.post("/api/encode")
@@ -342,6 +407,182 @@ def api_encode():
         return jsonify({"error": f"Unexpected error during encoding: {str(exc)}"}), 500
 
 
+@app.post("/api/lite/encode")
+def api_lite_encode():
+    encode_method = (request.form.get("encodeMethod") or "simple_lsb").strip().lower()
+    if encode_method not in {"simple_lsb", "advanced_lsb"}:
+        return jsonify({"error": "veil-frame-lite only supports simple_lsb and advanced_lsb."}), 400
+
+    image_file = request.files.get("image")
+    if image_file is None:
+        return jsonify({"error": "Image file is required"}), 400
+    if not image_file.filename:
+        return jsonify({"error": "Image file must have a filename"}), 400
+
+    try:
+        image_bytes = image_file.read()
+    except Exception as exc:
+        return jsonify({"error": f"Failed to read image file: {str(exc)}"}), 400
+
+    if not image_bytes:
+        return jsonify({"error": "Image file is empty"}), 400
+
+    max_size = 8 * 1024 * 1024  # 8MB
+    if len(image_bytes) > max_size:
+        return (
+            jsonify(
+                {"error": f"Image file too large. Maximum size is {max_size // (1024 * 1024)}MB"}
+            ),
+            400,
+        )
+
+    filename = image_file.filename or "input.png"
+
+    try:
+        output_format = normalize_output_format(request.form.get("outputFormat", "png"))
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    if encode_method == "advanced_lsb" and output_format != "png":
+        return jsonify({"error": "advanced_lsb in veil-frame-lite outputs PNG only."}), 400
+
+    payload_mode = (request.form.get("payloadMode") or "text").strip().lower()
+    payload_text: Optional[str] = request.form.get("text") or None
+    payload_file = request.files.get("payload")
+
+    if encode_method == "advanced_lsb":
+        channels_json = request.form.get("channels")
+        if not channels_json:
+            return jsonify({"error": "Channel payloads are required for advanced_lsb."}), 400
+
+        import json
+
+        try:
+            channels = json.loads(channels_json)
+        except Exception as exc:
+            return jsonify({"error": f"Invalid channels payload: {str(exc)}"}), 400
+
+        if not isinstance(channels, dict):
+            return jsonify({"error": "Channels payload must be a JSON object"}), 400
+
+        channel_payloads = {}
+        for ch in ["R", "G", "B", "A"]:
+            cfg = channels.get(ch) or {}
+            if not bool(cfg.get("enabled")):
+                channel_payloads[ch] = {"enabled": False}
+                continue
+
+            payload_type = cfg.get("type")
+            if payload_type == "text":
+                channel_payloads[ch] = {
+                    "enabled": True,
+                    "type": "text",
+                    "text": cfg.get("text") or "",
+                }
+            elif payload_type == "file":
+                upload = request.files.get(f"file_{ch}")
+                if not upload:
+                    return jsonify({"error": f"Missing file upload for channel {ch}"}), 400
+                data = upload.read()
+                if not data:
+                    return jsonify({"error": f"File for channel {ch} is empty"}), 400
+                channel_payloads[ch] = {
+                    "enabled": True,
+                    "type": "file",
+                    "file_data": data,
+                }
+            else:
+                return jsonify({"error": f"Invalid payload type '{payload_type}' for channel {ch}"}), 400
+
+        try:
+            encoded_name, encoded_bytes = encode_multi_channel(
+                image_bytes,
+                channel_payloads,
+                filename=filename,
+                output_format="png",
+            )
+        except ValueError as exc:
+            return jsonify({"error": f"Encoding failed: {str(exc)}"}), 400
+        except Exception as exc:
+            return jsonify({"error": f"Unexpected error during encoding: {str(exc)}"}), 500
+
+        output_mime = sniff_image_mime(encoded_bytes)
+        return jsonify(
+            {"filename": encoded_name, "data_url": as_data_url(encoded_bytes, mime=output_mime)}
+        )
+
+    mode = request.form.get("mode") or ("zlib" if payload_mode == "file" else "text")
+    plane = request.form.get("plane", "RGB")
+    if mode not in {"text", "zlib"}:
+        return jsonify({"error": "Mode must be text or zlib."}), 400
+
+    if mode == "text":
+        text = payload_text or ""
+        if not text:
+            return jsonify({"error": "Text payload is required for text mode"}), 400
+        file_data = None
+    else:
+        if not payload_file:
+            return jsonify({"error": "Payload file is required for zlib mode"}), 400
+        file_data = payload_file.read()
+        if not file_data:
+            return jsonify({"error": "Payload file is empty"}), 400
+        text = None
+
+    try:
+        encoded_name, encoded_bytes = encode_payload(
+            image_bytes,
+            filename=filename,
+            mode=mode,
+            plane=plane,
+            text=text,
+            file_data=file_data,
+            output_format=output_format,
+            lossy_output=True,
+        )
+    except ValueError as exc:
+        return jsonify({"error": f"Encoding failed: {str(exc)}"}), 400
+    except Exception as exc:
+        return jsonify({"error": f"Unexpected error during encoding: {str(exc)}"}), 500
+
+    output_mime = sniff_image_mime(encoded_bytes)
+    return jsonify({"filename": encoded_name, "data_url": as_data_url(encoded_bytes, mime=output_mime)})
+
+
+@app.post("/api/lite/decode")
+def api_lite_decode():
+    image_file = request.files.get("image")
+    if image_file is None:
+        return jsonify({"error": "Image file is required"}), 400
+    if not image_file.filename:
+        return jsonify({"error": "Image file must have a filename"}), 400
+
+    try:
+        image_bytes = image_file.read()
+    except Exception as exc:
+        return jsonify({"error": f"Failed to read image file: {str(exc)}"}), 400
+
+    if not image_bytes:
+        return jsonify({"error": "Image file is empty"}), 400
+
+    max_size = 8 * 1024 * 1024  # 8MB
+    if len(image_bytes) > max_size:
+        return (
+            jsonify(
+                {"error": f"Image file too large. Maximum size is {max_size // (1024 * 1024)}MB"}
+            ),
+            400,
+        )
+
+    try:
+        analysis = run_lite_analysis(image_bytes, image_file.filename or "upload.png")
+        return jsonify(analysis)
+    except ValueError as exc:
+        return jsonify({"error": f"Analysis failed: {str(exc)}"}), 400
+    except Exception as exc:
+        return jsonify({"error": f"Unexpected error during analysis: {str(exc)}"}), 500
+
+
 @app.post("/api/decode")
 def api_decode():
     image_file = request.files.get("image")
@@ -374,6 +615,19 @@ def api_decode():
     unicode_aggressiveness = request.form.get("unicodeAggressiveness") or "balanced"
     decode_option = request.form.get("decodeOption") or None
     spread_enabled = _form_flag(request.form.get("spreadSpectrum", "false"))
+    analysis_profile = request.form.get("analysisProfile") or None
+    selected_tools: Optional[list[str]] = None
+    selected_tools_raw = request.form.get("selectedTools")
+    if selected_tools_raw:
+        import json
+
+        try:
+            parsed = json.loads(selected_tools_raw)
+            if not isinstance(parsed, list):
+                return jsonify({"error": "selectedTools must be a JSON array."}), 400
+            selected_tools = [str(item) for item in parsed]
+        except Exception as exc:
+            return jsonify({"error": f"Invalid selectedTools payload: {str(exc)}"}), 400
 
     try:
         analysis = run_analysis(
@@ -389,6 +643,8 @@ def api_decode():
             unicode_aggressiveness=unicode_aggressiveness,
             spread_enabled=spread_enabled,
             decode_option=decode_option,
+            analysis_profile=analysis_profile,
+            selected_tools=selected_tools,
         )
         return jsonify(analysis)
     except ValueError as exc:

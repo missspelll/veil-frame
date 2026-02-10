@@ -166,6 +166,35 @@ def _list_files(base_dir: Path) -> list[str]:
     return files
 
 
+def _record_presence_probe(
+    output_dir: Path,
+    key: str,
+    commands: list[str],
+    *,
+    note: str,
+) -> None:
+    available_path = ""
+    for cmd in commands:
+        path = shutil.which(cmd)
+        if path:
+            available_path = path
+            break
+
+    if not available_path:
+        _record(output_dir, key, status="skipped", reason=f"{commands[0]} not installed")
+        return
+
+    _record(
+        output_dir,
+        key,
+        status="ok",
+        output=[
+            f"installed: {available_path}",
+            note,
+        ],
+    )
+
+
 def analyze_tool_suite(
     input_img: Path,
     output_dir: Path,
@@ -611,4 +640,82 @@ def analyze_tool_suite(
         allow_error=True,
         output_mode="text",
         note="auto mode: openstego algorithms",
+    )
+
+    for key, cmd, note in [
+        ("stegpy", ["stegpy", "--help"], "auto mode: stegpy --help"),
+        ("stegolsb", ["stegolsb", "--help"], "auto mode: stegolsb --help"),
+        ("lsbsteg", ["lsbsteg", "--help"], "auto mode: lsbsteg --help"),
+        ("stegano_lsb", ["stegano-lsb", "--help"], "auto mode: stegano-lsb --help"),
+        (
+            "stegano_lsb_set",
+            ["stegano-lsb-set", "--help"],
+            "auto mode: stegano-lsb-set --help",
+        ),
+        ("stegano_red", ["stegano-red", "--help"], "auto mode: stegano-red --help"),
+        ("cloackedpixel", ["cloackedpixel", "--help"], "auto mode: cloackedpixel --help"),
+        (
+            "cloackedpixel_analyse",
+            ["cloackedpixel-analyse", "--help"],
+            "auto mode: cloackedpixel-analyse --help",
+        ),
+        ("jphide", ["jphide", "-h"], "jpeg hide probe: jphide -h"),
+        ("jphs", ["jphs", "-h"], "jpeg seek probe: jphs -h"),
+        ("jpseek", ["jpseek", "-h"], "jpeg seek probe: jpseek -h"),
+        ("stegsnow", ["snow", "-h"], "text stego probe: snow -h"),
+        ("hideme", ["hideme", "--help"], "audio stego probe: hideme --help"),
+        (
+            "mp3stego_encode",
+            ["mp3stego-encode", "--help"],
+            "audio stego probe: mp3stego-encode --help",
+        ),
+        (
+            "mp3stego_decode",
+            ["mp3stego-decode", "--help"],
+            "audio stego probe: mp3stego-decode --help",
+        ),
+        ("stegify", ["stegify", "--help"], "generic stego probe: stegify --help"),
+    ]:
+        _run_tool(
+            output_dir,
+            key,
+            cmd,
+            allow_error=True,
+            output_mode="text",
+            note=note,
+        )
+
+    _record_presence_probe(
+        output_dir,
+        "stegosuite",
+        ["stegosuite"],
+        note="manual tool installed. launch separately for interactive workflows.",
+    )
+    _record_presence_probe(
+        output_dir,
+        "sonic_visualiser",
+        ["sonic-visualiser", "sonic_visualiser"],
+        note="manual gui tool installed. use it for audio-spectrum forensics.",
+    )
+    _record_presence_probe(
+        output_dir,
+        "openpuff",
+        ["openpuff"],
+        note="manual gui tool installed. run separately for windows-style workflows.",
+    )
+    _record_presence_probe(
+        output_dir,
+        "deepsound",
+        ["deepsound"],
+        note="manual gui tool installed. run separately for audio embedding workflows.",
+    )
+
+    _record(
+        output_dir,
+        "tool_suite",
+        status="ok",
+        output=[
+            f"completed extended tool sweep for {input_img.name}",
+            "inspect each tool card for payload-focused findings and metadata.",
+        ],
     )

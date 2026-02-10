@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import random
+import re
 import time
 import zlib
 from collections import Counter
@@ -24,6 +25,8 @@ MAGIC_SIGNATURES = {
 
 DCT_COORDS = [(2, 3), (3, 2), (3, 4), (4, 3), (4, 4)]
 DEFAULT_MAX_BYTES = 65536
+BASE64_LIKE_RE = re.compile(r"\b(?:[A-Za-z0-9+/]{24,}={0,2})\b")
+HEX_LIKE_RE = re.compile(r"\b(?:0x)?[0-9a-fA-F]{16,}\b")
 
 _DCT_CACHE: Dict[Tuple[str, int, int], np.ndarray] = {}
 
@@ -1257,8 +1260,8 @@ def analyze_auto_detect(
 ) -> Dict[str, Any]:
     started = _now_ms()
     mime = _sniff_mime(input_img)
-    candidates: List[Dict[str, Any]] = []
     order: List[str] = []
+    option_results: Dict[str, Dict[str, Any]] = {}
 
     if mime == "image/png":
         order = ["png_chunks", "palette", "lsb", "chroma", "pvd", "spread_spectrum"]
@@ -1272,37 +1275,34 @@ def analyze_auto_detect(
         if not option:
             continue
         params = {"password": password}
-        result = option["analyzer"](input_img, **option["params"](option, params))
-        if result["status"] == "ok":
-            candidates.append(
-                {
-                    "option_id": opt_id,
-                    "label": result["label"],
-                    "confidence": result["confidence"],
-                    "summary": result["summary"],
-                }
-            )
+        option_results[opt_id] = option["analyzer"](
+            input_img, **option["params"](option, params)
+        )
 
+    candidates = _rank_candidates(option_results, input_mime=mime)
     if not candidates:
         return _result(
             option_id,
             label,
             "no_signal",
             0.2,
-            "No strong candidates detected in auto mode.",
+            "Smart scan found no high-confidence candidates.",
             details={"candidates": []},
             started_ms=started,
         )
 
-    candidates.sort(key=lambda c: c["confidence"], reverse=True)
-    summary = f"Top candidate: {candidates[0]['label']} ({candidates[0]['confidence']})."
+    top = candidates[0]
+    summary = f"Top candidate: {top['label']} ({top['confidence']})."
     return _result(
         option_id,
         label,
         "ok",
-        candidates[0]["confidence"],
+        top["confidence"],
         summary,
-        details={"candidates": candidates},
+        details={
+            "candidates": candidates,
+            "strategy": "format-aware confidence ranking",
+        },
         started_ms=started,
     )
 
@@ -1311,21 +1311,11 @@ def build_auto_detect_result(
     option_id: str,
     label: str,
     option_results: Dict[str, Dict[str, Any]],
+    *,
+    input_mime: str = "",
 ) -> Dict[str, Any]:
     started = _now_ms()
-    candidates: List[Dict[str, Any]] = []
-    for opt_id, result in option_results.items():
-        if not result or result.get("status") != "ok":
-            continue
-        confidence = float(result.get("confidence", 0.0))
-        candidates.append(
-            {
-                "option_id": opt_id,
-                "label": result.get("label", opt_id),
-                "confidence": round(confidence, 3),
-                "summary": result.get("summary", ""),
-            }
-        )
+    candidates = _rank_candidates(option_results, input_mime=input_mime)
 
     if not candidates:
         return _result(
@@ -1333,22 +1323,225 @@ def build_auto_detect_result(
             label,
             "no_signal",
             0.2,
-            "No strong candidates detected in auto mode.",
+            "Smart scan found no high-confidence candidates.",
             details={"candidates": []},
             started_ms=started,
         )
 
-    candidates.sort(key=lambda c: c["confidence"], reverse=True)
-    summary = f"Top candidate: {candidates[0]['label']} ({candidates[0]['confidence']})."
+    top = candidates[0]
+    summary = f"Top candidate: {top['label']} ({top['confidence']})."
     return _result(
         option_id,
         label,
         "ok",
-        candidates[0]["confidence"],
+        top["confidence"],
         summary,
-        details={"candidates": candidates},
+        details={
+            "candidates": candidates,
+            "strategy": "format-aware confidence ranking",
+        },
         started_ms=started,
     )
+
+
+def _extract_preview(result: Dict[str, Any]) -> str:
+    details = result.get("details") or {}
+    if isinstance(details, dict):
+        for key in ("preview", "text_preview", "pref_text", "zlib_preview"):
+            value = details.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+
+        text_chunks = details.get("text")
+        if isinstance(text_chunks, list):
+            for item in text_chunks:
+                if isinstance(item, dict):
+                    chunk = item.get("text")
+                    if isinstance(chunk, str) and chunk.strip():
+                        return chunk.strip()
+
+    artifacts = result.get("artifacts")
+    if isinstance(artifacts, list):
+        for item in artifacts:
+            if isinstance(item, dict):
+                data = item.get("data")
+                if isinstance(data, str) and data.strip():
+                    return data.strip()
+
+    return ""
+
+
+def _mime_prior(option_id: str, input_mime: str) -> float:
+    png_prior = {
+        "png_chunks": 0.18,
+        "palette": 0.14,
+        "lsb": 0.1,
+        "chroma": 0.08,
+        "pvd": 0.06,
+    }
+    jpeg_prior = {
+        "dct": 0.2,
+        "f5": 0.18,
+        "chroma": 0.08,
+        "lsb": 0.06,
+        "pvd": 0.06,
+    }
+    if input_mime == "image/png":
+        return png_prior.get(option_id, 0.0)
+    if input_mime == "image/jpeg":
+        return jpeg_prior.get(option_id, 0.0)
+    return 0.0
+
+
+def _preview_signal_score(preview: str) -> Tuple[float, List[str]]:
+    text = (preview or "").strip()
+    if not text:
+        return 0.0, []
+
+    score = 0.0
+    signals: List[str] = []
+    lowered = text.lower()
+
+    if any(
+        token in lowered
+        for token in (
+            "flag{",
+            "ctf{",
+            "password",
+            "passphrase",
+            "secret",
+            "token",
+            "api_key",
+            "ssh-rsa",
+            "-----begin",
+        )
+    ):
+        score += 0.14
+        signals.append("keyword-hit")
+
+    if re.search(r"https?://|mailto:", lowered):
+        score += 0.04
+        signals.append("url-like")
+
+    if BASE64_LIKE_RE.search(text):
+        score += 0.05
+        signals.append("base64-like")
+
+    if HEX_LIKE_RE.search(text):
+        score += 0.03
+        signals.append("hex-like")
+
+    printable_ratio = _printable_ratio(text)
+    if printable_ratio >= 0.9:
+        score += 0.03
+        signals.append("high-printable")
+    elif printable_ratio < 0.55:
+        score -= 0.05
+        signals.append("low-printable")
+
+    if len(text) >= 32:
+        dominant = Counter(text).most_common(1)[0][1] / len(text)
+        if dominant > 0.35:
+            score -= 0.05
+            signals.append("repetitive-pattern")
+
+    return max(-0.15, min(0.22, score)), signals
+
+
+def _candidate_score(option_id: str, result: Dict[str, Any], input_mime: str) -> Tuple[float, List[str]]:
+    if not result or result.get("status") != "ok":
+        return 0.0, []
+
+    score = float(result.get("confidence", 0.0))
+    boost = _mime_prior(option_id, input_mime)
+    signals: List[str] = []
+
+    details = result.get("details") or {}
+    summary = str(result.get("summary", "")).lower()
+    preview = _extract_preview(result)
+
+    if "recovered" in summary or "found" in summary:
+        boost += 0.04
+        signals.append("summary-recovery")
+    if preview:
+        boost += min(0.06, len(preview) / 1500.0)
+        signals.append("preview-present")
+        if re.search(r"[A-Z0-9]{3,}_[A-Z0-9]{2,}", preview):
+            boost += 0.12
+            signals.append("flag-like-pattern")
+
+        non_printable = sum(1 for ch in preview if not ch.isprintable()) / max(1, len(preview))
+        if non_printable > 0.08:
+            boost -= 0.12
+            signals.append("non-printable-penalty")
+
+        preview_boost, preview_signals = _preview_signal_score(preview)
+        boost += preview_boost
+        signals.extend(preview_signals)
+
+    if isinstance(details, dict):
+        magic = details.get("magic")
+        if isinstance(magic, str) and magic:
+            boost += 0.18
+            signals.append("magic-signature")
+        text_ratio = details.get("text_ratio")
+        try:
+            ratio = float(text_ratio)
+        except (TypeError, ValueError):
+            ratio = 0.0
+        if ratio >= 0.7:
+            boost += 0.06
+            signals.append("high-text-ratio")
+        elif ratio >= 0.5:
+            boost += 0.03
+            signals.append("mid-text-ratio")
+
+        candidates = details.get("candidates")
+        if isinstance(candidates, list):
+            strong_count = 0
+            for item in candidates:
+                if not isinstance(item, dict):
+                    continue
+                try:
+                    conf = float(item.get("confidence", 0.0))
+                except (TypeError, ValueError):
+                    conf = 0.0
+                if conf >= 0.55:
+                    strong_count += 1
+            if strong_count >= 2:
+                boost += 0.04
+                signals.append("multi-candidate-support")
+
+    boost = max(-0.2, min(0.25, boost))
+    score += boost
+    dedup_signals = list(dict.fromkeys(signals))
+    return max(0.0, min(1.0, score)), dedup_signals
+
+
+def _rank_candidates(
+    option_results: Dict[str, Dict[str, Any]],
+    *,
+    input_mime: str = "",
+) -> List[Dict[str, Any]]:
+    ranked: List[Dict[str, Any]] = []
+    for opt_id, result in option_results.items():
+        score, signals = _candidate_score(opt_id, result, input_mime)
+        if score < 0.25:
+            continue
+        ranked.append(
+            {
+                "option_id": opt_id,
+                "label": result.get("label", opt_id),
+                "confidence": round(score, 3),
+                "summary": result.get("summary", ""),
+                "base_confidence": round(float(result.get("confidence", 0.0)), 3),
+                "preview": _extract_preview(result)[:200],
+                "signals": signals,
+            }
+        )
+
+    ranked.sort(key=lambda item: item["confidence"], reverse=True)
+    return ranked
 
 
 def param_adapter(option: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
