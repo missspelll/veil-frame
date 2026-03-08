@@ -204,7 +204,19 @@ def _run_decode_options(
             continue
 
         params = {"password": password}
-        result = option["analyzer"](image_path, **option["params"](option, params))
+        try:
+            result = option["analyzer"](image_path, **option["params"](option, params))
+        except Exception as exc:
+            result = {
+                "option_id": option_id,
+                "label": option.get("label", option_id),
+                "status": "error",
+                "confidence": 0.0,
+                "summary": f"Decoder failed: {exc}",
+                "details": {},
+                "artifacts": [],
+                "timing_ms": 0,
+            }
         result["mode"] = mode
         update_data(output_dir, {option_id: result})
         option_results[option_id] = result
