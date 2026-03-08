@@ -38,7 +38,17 @@ def run_lite_analysis(image_bytes: bytes, filename: str) -> Dict[str, Any]:
 
         image_path.write_bytes(image_bytes)
 
-        simple_rgb, channels = extract_plane_payloads(image_path)
+        try:
+            simple_rgb, channels = extract_plane_payloads(image_path)
+        except Exception as exc:
+            print(f"Warning: Failed to decode plane payloads: {exc}")
+            simple_rgb = ""
+            channels = {
+                "red_plane": "",
+                "green_plane": "",
+                "blue_plane": "",
+                "alpha_plane": "",
+            }
         planes = plane_payload_results(simple_rgb, channels)
 
         analyze_simple_lsb(image_path, output_dir)

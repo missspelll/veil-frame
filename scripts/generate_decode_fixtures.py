@@ -98,21 +98,56 @@ def encode_palette(path: Path, payload: bytes) -> None:
 def encode_chroma(path: Path, payload: bytes) -> None:
     rng = np.random.default_rng(3)
     arr = rng.integers(0, 255, size=(64, 64, 3), dtype=np.uint8)
-    img = Image.fromarray(arr, "RGB").convert("YCbCr")
-    ycbcr = np.array(img)
     bits = bits_from_bytes(payload)
     bit_pos = 3
     mask = 1 << bit_pos
-    repeat = 7
-    expanded: List[int] = []
-    for bit in bits:
-        expanded.extend([bit] * repeat)
-    for idx, bit in enumerate(expanded):
+
+    # Build a map: pixel index -> {channel: desired_bit}
+    pixel_bits: dict = {}
+    for idx, bit in enumerate(bits):
         channel = 1 if idx % 2 == 0 else 2
-        flat = ycbcr[:, :, channel].reshape(-1)
-        flat[idx // 2] = (flat[idx // 2] & ~mask) | (bit << bit_pos)
-    out = Image.fromarray(ycbcr, "YCbCr").convert("RGB")
-    out.save(path)
+        pixel = idx // 2
+        pixel_bits.setdefault(pixel, {})[channel] = bit
+
+    # The YCbCr<->RGB round-trip is lossy, so we fix one pixel at a time
+    # by searching for nearby RGB values that produce the desired chroma bits.
+    rgb = arr.copy()
+    for pixel, targets in pixel_bits.items():
+        py, px = divmod(pixel, 64)
+        best = rgb[py, px].copy()
+        # Try incremental adjustments to find RGB that yields correct bits
+        for radius in range(1, 40):
+            found = False
+            # Check current pixel
+            test = Image.fromarray(rgb[py:py+1, px:px+1], "RGB").convert("YCbCr")
+            ycbcr_px = np.array(test)[0, 0]
+            ok = all((int(ycbcr_px[ch]) >> bit_pos) & 1 == b for ch, b in targets.items())
+            if ok:
+                break
+            # Nudge: Cb~0.5*B, Cr~0.5*R; try adjustments in primary channel
+            for ch_target, desired_bit in targets.items():
+                actual_bit = (int(ycbcr_px[ch_target]) >> bit_pos) & 1
+                if actual_bit == desired_bit:
+                    continue
+                # Cb → nudge B (index 2), Cr → nudge R (index 0)
+                rgb_ch = 2 if ch_target == 1 else 0
+                for sign in (1, -1):
+                    old_val = int(rgb[py, px, rgb_ch])
+                    new_val = max(0, min(255, old_val + sign * radius))
+                    rgb[py, px, rgb_ch] = new_val
+                    test = Image.fromarray(rgb[py:py+1, px:px+1], "RGB").convert("YCbCr")
+                    ycbcr_px = np.array(test)[0, 0]
+                    ok = all((int(ycbcr_px[c]) >> bit_pos) & 1 == b for c, b in targets.items())
+                    if ok:
+                        found = True
+                        break
+                    rgb[py, px, rgb_ch] = old_val
+                if found:
+                    break
+            if found:
+                break
+
+    Image.fromarray(rgb, "RGB").save(path)
 
 
 def encode_png_chunks(path: Path) -> None:
