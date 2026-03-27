@@ -1,40 +1,41 @@
-# veil-frame
+# 𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞
 
-veil-frame is a Flask observatory for image steganography.
-it lets you hide payloads in one orbit and sweep for hidden signals in another.
+𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞 𝐢𝗌 𝐚 𝗌𝗍𝐚𝗋𝗅𝐢𝗍 𝖿𝗅𝐚𝗌𝗄 𝐨𝖻𝗌𝐞𝗋𝗏𝐚𝗍𝐨𝗋𝗒 𝖿𝐨𝗋 𝐢𝗆𝐚𝗀𝐞 𝗌𝐞𝖼𝗋𝐞𝗍𝗌.
+𝐢𝗍 𝗅𝐞𝗍𝗌 𝗒𝐨𝐮 𝗁𝐢𝖽𝐞 𝗌𝐢𝗀𝗇𝐚𝗅𝗌 𝐢𝗇 𝐨𝗇𝐞 𝐨𝗋𝖻𝐢𝗍 𝐚𝗇𝖽 𝗌𝗐𝐞𝐞𝗉 𝖿𝐨𝗋 𝗁𝐢𝖽𝖽𝐞𝗇 𝖼𝐨𝗇𝗌𝗍𝐞𝗅𝗅𝐚𝗍𝐢𝐨𝗇𝗌 𝐢𝗇 𝐚𝗇𝐨𝗍𝗁𝐞𝗋.
 
-the UI uses a custom unicode glyph map for its visual identity — vowels render
-in **Mathematical Sans-Serif Bold** and consonants in **Mathematical Sans-Serif**.
-the map is defined in `static/app.js` and `static/lite.js` as `unicode_lower`,
-applied via `stylizeUi()`. see `docs/unicode-glyph-map.md` for the full table
-and rules for contributing text.
+𝐞𝗏𝐞𝗋𝗒 𝗏𝐢𝗌𝐢𝖻𝗅𝐞 𝗌𝐞𝗇𝗍𝐞𝗇𝖼𝐞 𝐢𝗇 𝗍𝗁𝐞 𝐮𝐢 𝐢𝗌 𝗌𝗁𝐚𝗉𝐞𝖽 𝖻𝗒 𝐚 𝖼𝐮𝗌𝗍𝐨𝗆 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗀𝗅𝗒𝗉𝗁 𝗆𝐚𝗉:
+- `static/app.js` -> `unicode_lower`
+- `static/lite.js` -> `unicode_lower`
 
-## constellation at a glance
-- encoder orbits: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
-- decoder sweep includes ranked `auto_detect`, method-targeted decoders, bit-plane carving, internal analyzers, and external stego tools.
-- profile-driven analysis depth: `quick`, `balanced`, `deep`, `forensic`.
-- custom analyzer selection lets you choose exactly which stars to scan.
-- `veil-frame-lite` at `/lite` keeps a smaller sky: `simple_lsb` + `advanced_lsb` encode, plus lite decode tools.
+𝗏𝐨𝗐𝐞𝗅𝗌 𝗀𝗅𝐨𝗐 𝐢𝗇 𝗆𝐚𝗍𝗁𝐞𝗆𝐚𝗍𝐢𝖼𝐚𝗅 𝗌𝐚𝗇𝗌-𝗌𝐞𝗋𝐢𝖿 𝖻𝐨𝗅𝖽; 𝖼𝐨𝗇𝗌𝐨𝗇𝐚𝗇𝗍𝗌 𝖽𝗋𝐢𝖿𝗍 𝐢𝗇 𝗋𝐞𝗀𝐮𝗅𝐚𝗋 𝗐𝐞𝐢𝗀𝗁𝗍.
+𝗌𝐞𝐞 `docs/unicode-glyph-map.md` 𝖿𝐨𝗋 𝗍𝗁𝐞 𝖿𝐮𝗅𝗅 𝗍𝐚𝖻𝗅𝐞 𝐚𝗇𝖽 𝗋𝐮𝗅𝐞𝗌 𝖿𝐨𝗋 𝖼𝐨𝗇𝗍𝗋𝐢𝖻𝐮𝗍𝐢𝗇𝗀 𝗍𝐞𝗑𝗍.
 
-## launch sequence (docker compose)
+## 𝖼𝐨𝗇𝗌𝗍𝐞𝗅𝗅𝐚𝗍𝐢𝐨𝗇 𝐚𝗍 𝐚 𝗀𝗅𝐚𝗇𝖼𝐞
+- 𝐞𝗇𝖼𝐨𝖽𝐞𝗋 𝐨𝗋𝖻𝐢𝗍𝗌: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
+- 𝖽𝐞𝖼𝐨𝖽𝐞𝗋 𝗌𝗐𝐞𝐞𝗉 𝐢𝗇𝖼𝗅𝐮𝖽𝐞𝗌 𝗋𝐚𝗇𝗄𝐞𝖽 `auto_detect`, 𝗆𝐞𝗍𝗁𝐨𝖽-𝗍𝐚𝗋𝗀𝐞𝗍𝐞𝖽 𝖽𝐞𝖼𝐨𝖽𝐞𝗋𝗌, 𝖻𝐢𝗍-𝗉𝗅𝐚𝗇𝐞 𝖼𝐚𝗋𝗏𝐢𝗇𝗀, 𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌, 𝐚𝗇𝖽 𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌.
+- 𝗉𝗋𝐨𝖿𝐢𝗅𝐞-𝖽𝗋𝐢𝗏𝐞𝗇 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝖽𝐞𝗉𝗍𝗁: `quick`, `balanced`, `deep`, `forensic`.
+- 𝖼𝐮𝗌𝗍𝐨𝗆 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 𝗌𝐞𝗅𝐞𝖼𝗍𝐢𝐨𝗇 𝗅𝐞𝗍𝗌 𝗒𝐨𝐮 𝖼𝗁𝐨𝐨𝗌𝐞 𝐞𝗑𝐚𝖼𝗍𝗅𝗒 𝗐𝗁𝐢𝖼𝗁 𝗌𝗍𝐚𝗋𝗌 𝗍𝐨 𝗌𝖼𝐚𝗇.
+- `veil-frame-lite` 𝐚𝗍 `/lite` 𝗄𝐞𝐞𝗉𝗌 𝐚 𝗌𝗆𝐚𝗅𝗅𝐞𝗋 𝗌𝗄𝗒: `simple_lsb` + `advanced_lsb` 𝐞𝗇𝖼𝐨𝖽𝐞, 𝗉𝗅𝐮𝗌 𝗅𝐢𝗍𝐞 𝖽𝐞𝖼𝐨𝖽𝐞 𝗍𝐨𝐨𝗅𝗌.
+
+## 𝗅𝐚𝐮𝗇𝖼𝗁 𝗌𝐞𝗊𝐮𝐞𝗇𝖼𝐞 (𝖽𝐨𝖼𝗄𝐞𝗋 𝖼𝐨𝗆𝗉𝐨𝗌𝐞)
 ```bash
 cd veil-frame
 docker compose up --build
 ```
-then open `http://127.0.0.1:5050`.
+𝗍𝗁𝐞𝗇 𝐨𝗉𝐞𝗇 `http://127.0.0.1:5050`.
 
-notes:
-- container port `5000` is published to host `5050`.
-- the repo is bind-mounted into `/workspace` for fast iteration.
-- compose runtime sets `FLASK_ENV=development` and `FLASK_DEBUG=1`.
+𝗇𝐨𝗍𝐞𝗌:
+- 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝗉𝐨𝗋𝗍 `5000` 𝐢𝗌 𝗉𝐮𝖻𝗅𝐢𝗌𝗁𝐞𝖽 𝗍𝐨 𝗁𝐨𝗌𝗍 `5050`.
+- 𝗍𝗁𝐞 𝗋𝐞𝗉𝐨 𝐢𝗌 𝖻𝐢𝗇𝖽-𝗆𝐨𝐮𝗇𝗍𝐞𝖽 𝐢𝗇𝗍𝐨 `/workspace` 𝖿𝐨𝗋 𝖿𝐚𝗌𝗍 𝐢𝗍𝐞𝗋𝐚𝗍𝐢𝐨𝗇.
+- 𝖼𝐨𝗆𝗉𝐨𝗌𝐞 𝗋𝐮𝗇𝗍𝐢𝗆𝐞 𝗌𝐞𝗍𝗌 `FLASK_ENV=development` 𝐚𝗇𝖽 `FLASK_DEBUG=1`.
 
-## devcontainer orbit
-1. open the folder in vs code.
-2. run "reopen in container".
-3. the devcontainer uses the same docker stack, with tooling preinstalled.
+## 𝖽𝐞𝗏𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝐨𝗋𝖻𝐢𝗍
+1. 𝐨𝗉𝐞𝗇 𝗍𝗁𝐞 𝖿𝐨𝗅𝖽𝐞𝗋 𝐢𝗇 𝗏𝗌 𝖼𝐨𝖽𝐞.
+2. 𝗋𝐮𝗇 "𝗋𝐞𝐨𝗉𝐞𝗇 𝐢𝗇 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋".
+3. 𝗍𝗁𝐞 𝖽𝐞𝗏𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝐮𝗌𝐞𝗌 𝗍𝗁𝐞 𝗌𝐚𝗆𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝗌𝗍𝐚𝖼𝗄, 𝗐𝐢𝗍𝗁 𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝗉𝗋𝐞𝐢𝗇𝗌𝗍𝐚𝗅𝗅𝐞𝖽.
 
-## local run (without docker)
-install python 3.11+ and the external tools you need (for example: `binwalk`, `foremost`, `steghide`, `outguess`, `zsteg`, `exiftool`, `strings`, `7z`).
+## 𝗅𝐨𝖼𝐚𝗅 𝗋𝐮𝗇 (𝗐𝐢𝗍𝗁𝐨𝐮𝗍 𝖽𝐨𝖼𝗄𝐞𝗋)
+𝐢𝗇𝗌𝗍𝐚𝗅𝗅 𝗉𝗒𝗍𝗁𝐨𝗇 3.11+ 𝐚𝗇𝖽 𝗍𝗁𝐞 𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌 𝗒𝐨𝐮 𝗇𝐞𝐞𝖽 (𝖿𝐨𝗋 𝐞𝗑𝐚𝗆𝗉𝗅𝐞: `binwalk`, `foremost`, `steghide`, `outguess`, `zsteg`, `exiftool`, `strings`, `7z`).
 
 ```bash
 cd veil-frame
@@ -42,178 +43,178 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 flask --app app run --debug
 ```
-then open `http://127.0.0.1:5000`.
+𝗍𝗁𝐞𝗇 𝐨𝗉𝐞𝗇 `http://127.0.0.1:5000`.
 
-## production burn (gunicorn)
+## 𝗉𝗋𝐨𝖽𝐮𝖼𝗍𝐢𝐨𝗇 𝖻𝐮𝗋𝗇 (𝗀𝐮𝗇𝐢𝖼𝐨𝗋𝗇)
 ```bash
 pip install -r requirements.txt
 gunicorn wsgi:app --bind 0.0.0.0:8000
 ```
 
-for hosted platforms, bind to `$PORT`:
+𝖿𝐨𝗋 𝗁𝐨𝗌𝗍𝐞𝖽 𝗉𝗅𝐚𝗍𝖿𝐨𝗋𝗆𝗌, 𝖻𝐢𝗇𝖽 𝗍𝐨 `$PORT`:
 ```bash
 gunicorn wsgi:app --bind 0.0.0.0:$PORT
 ```
 
-the docker image itself starts with:
+𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗆𝐚𝗀𝐞 𝐢𝗍𝗌𝐞𝗅𝖿 𝗌𝗍𝐚𝗋𝗍𝗌 𝗐𝐢𝗍𝗁:
 ```bash
 gunicorn --bind 0.0.0.0:${PORT:-10000} app:app
 ```
 
 ---
 
-## analysis profiles
+## 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝐨𝗋𝖻𝐢𝗍𝗌
 
-the decoder uses four profiles that control which tools run and how deep the analysis goes. the UI auto-selects analyzers and advanced options based on the chosen profile.
+𝗍𝗁𝐞 𝖽𝐞𝖼𝐨𝖽𝐞𝗋 𝐮𝗌𝐞𝗌 𝖿𝐨𝐮𝗋 𝐨𝗋𝖻𝐢𝗍𝗌 𝗍𝗁𝐚𝗍 𝖼𝐨𝗇𝗍𝗋𝐨𝗅 𝗁𝐨𝗐 𝖽𝐞𝐞𝗉 𝗍𝗁𝐞 𝗌𝗐𝐞𝐞𝗉 𝗀𝐨𝐞𝗌. 𝗍𝗁𝐞 𝐮𝐢 𝐚𝐮𝗍𝐨-𝗌𝐞𝗅𝐞𝖼𝗍𝗌 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 𝐚𝗇𝖽 𝐚𝖽𝗏𝐚𝗇𝖼𝐞𝖽 𝐨𝗉𝗍𝐢𝐨𝗇𝗌 𝖻𝐚𝗌𝐞𝖽 𝐨𝗇 𝗍𝗁𝐞 𝖼𝗁𝐨𝗌𝐞𝗇 𝖽𝐞𝗉𝗍𝗁.
 
-### quick (eta: 15s - 1m 30s)
-fast, python-only signal checks. no external tools.
+### 𝗊𝐮𝐢𝖼𝗄 (𝐞𝗍𝐚: 15𝗌 - 1𝗆 30𝗌)
+𝖿𝐚𝗌𝗍, 𝗉𝗒𝗍𝗁𝐨𝗇-𝐨𝗇𝗅𝗒 𝗌𝐢𝗀𝗇𝐚𝗅 𝖼𝗁𝐞𝖼𝗄𝗌. 𝗇𝐨 𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌.
 
-**internal analyzers (10):**
+**𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 (10):**
 
-| analyzer | description |
+| 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 | 𝖽𝐞𝗌𝖼𝗋𝐢𝗉𝗍𝐢𝐨𝗇 |
 |----------|-------------|
-| `smart_scan` | quick entropy + format triage to prioritize likely payload paths |
-| `advanced_lsb` | per-channel text/zlib detector for multi-plane payloads |
-| `simple_lsb` | common lsb text extraction across rgb/rgba planes |
-| `simple_zlib` | zlib stream recovery from typical lsb bitstreams |
-| `simple_rgb` | rgb plane text extraction |
-| `red_plane` | red channel isolated extraction |
-| `green_plane` | green channel isolated extraction |
-| `blue_plane` | blue channel isolated extraction |
-| `alpha_plane` | alpha channel isolated extraction |
-| `decode_options` | method-targeted decoders (lsb, pvd, dct, f5, etc.) |
+| `smart_scan` | 𝗊𝐮𝐢𝖼𝗄 𝐞𝗇𝗍𝗋𝐨𝗉𝗒 + 𝖿𝐨𝗋𝗆𝐚𝗍 𝗍𝗋𝐢𝐚𝗀𝐞 𝗍𝐨 𝗉𝗋𝐢𝐨𝗋𝐢𝗍𝐢𝗓𝐞 𝗅𝐢𝗄𝐞𝗅𝗒 𝗌𝐢𝗀𝗇𝐚𝗅 𝗉𝐚𝗍𝗁𝗌 |
+| `advanced_lsb` | 𝗉𝐞𝗋-𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝗍𝐞𝗑𝗍/𝗓𝗅𝐢𝖻 𝖽𝐞𝗍𝐞𝖼𝗍𝐨𝗋 𝖿𝐨𝗋 𝗆𝐮𝗅𝗍𝐢-𝗉𝗅𝐚𝗇𝐞 𝗌𝐢𝗀𝗇𝐚𝗅𝗌 |
+| `simple_lsb` | 𝖼𝐨𝗆𝗆𝐨𝗇 𝗅𝗌𝖻 𝗍𝐞𝗑𝗍 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝐚𝖼𝗋𝐨𝗌𝗌 𝗋𝗀𝖻/𝗋𝗀𝖻𝐚 𝗉𝗅𝐚𝗇𝐞𝗌 |
+| `simple_zlib` | 𝗓𝗅𝐢𝖻 𝗌𝗍𝗋𝐞𝐚𝗆 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 𝖿𝗋𝐨𝗆 𝗍𝗒𝗉𝐢𝖼𝐚𝗅 𝗅𝗌𝖻 𝖻𝐢𝗍𝗌𝗍𝗋𝐞𝐚𝗆𝗌 |
+| `simple_rgb` | 𝗋𝗀𝖻 𝗉𝗅𝐚𝗇𝐞 𝗍𝐞𝗑𝗍 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `red_plane` | 𝗋𝐞𝖽 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐢𝗌𝐨𝗅𝐚𝗍𝐞𝖽 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `green_plane` | 𝗀𝗋𝐞𝐞𝗇 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐢𝗌𝐨𝗅𝐚𝗍𝐞𝖽 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `blue_plane` | 𝖻𝗅𝐮𝐞 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐢𝗌𝐨𝗅𝐚𝗍𝐞𝖽 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `alpha_plane` | 𝐚𝗅𝗉𝗁𝐚 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐢𝗌𝐨𝗅𝐚𝗍𝐞𝖽 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `decode_options` | 𝗆𝐞𝗍𝗁𝐨𝖽-𝗍𝐚𝗋𝗀𝐞𝗍𝐞𝖽 𝖽𝐞𝖼𝐨𝖽𝐞𝗋𝗌 (𝗅𝗌𝖻, 𝗉𝗏𝖽, 𝖽𝖼𝗍, 𝖿5, 𝐞𝗍𝖼.) |
 
-### balanced (eta: 1m - 4m)
-everyday workshop profile. broad coverage without deep brute-force passes.
+### 𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽 (𝐞𝗍𝐚: 1𝗆 - 4𝗆)
+𝐞𝗏𝐞𝗋𝗒𝖽𝐚𝗒 𝗐𝐨𝗋𝗄𝗌𝗁𝐨𝗉 𝐨𝗋𝖻𝐢𝗍. 𝖻𝗋𝐨𝐚𝖽 𝖼𝐨𝗏𝐞𝗋𝐚𝗀𝐞 𝗐𝐢𝗍𝗁𝐨𝐮𝗍 𝖽𝐞𝐞𝗉 𝖻𝗋𝐮𝗍𝐞-𝖿𝐨𝗋𝖼𝐞 𝗉𝐚𝗌𝗌𝐞𝗌.
 
-**internal analyzers (18):** all quick analyzers plus:
+**𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 (18):** 𝐚𝗅𝗅 𝗊𝐮𝐢𝖼𝗄 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 𝗉𝗅𝐮𝗌:
 
-| analyzer | description |
+| 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 | 𝖽𝐞𝗌𝖼𝗋𝐢𝗉𝗍𝐢𝐨𝗇 |
 |----------|-------------|
-| `stegg` | legacy stegg-compatible decode probe |
-| `zero_width` | zero-width unicode hidden text extraction |
-| `entropy_analyzer` | channel entropy anomalies and lsb randomness checks |
-| `jpeg_qtable_analyzer` | jpeg quantization table forensic hints |
-| `statistical_steg` | statistical detection heuristics for embedded data |
-| `payload_unwrap` | unwrap base64/base91/xor/rot payload wrappers |
-| `xor_flag_sweep` | keyword-guided xor sweep for ctf-style payloads |
-| `randomizer_decode` | shuffle/xor candidate decodes for obfuscated plaintext |
-| `decomposer` | render per-plane images for visual payload inspection |
+| `stegg` | 𝗅𝐞𝗀𝐚𝖼𝗒 𝗌𝗍𝐞𝗀𝗀-𝖼𝐨𝗆𝗉𝐚𝗍𝐢𝖻𝗅𝐞 𝖽𝐞𝖼𝐨𝖽𝐞 𝗉𝗋𝐨𝖻𝐞 |
+| `zero_width` | 𝗓𝐞𝗋𝐨-𝗐𝐢𝖽𝗍𝗁 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗁𝐢𝖽𝖽𝐞𝗇 𝗍𝐞𝗑𝗍 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `entropy_analyzer` | 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐞𝗇𝗍𝗋𝐨𝗉𝗒 𝐚𝗇𝐨𝗆𝐚𝗅𝐢𝐞𝗌 𝐚𝗇𝖽 𝗅𝗌𝖻 𝗋𝐚𝗇𝖽𝐨𝗆𝗇𝐞𝗌𝗌 𝖼𝗁𝐞𝖼𝗄𝗌 |
+| `jpeg_qtable_analyzer` | 𝗃𝗉𝐞𝗀 𝗊𝐮𝐚𝗇𝗍𝐢𝗓𝐚𝗍𝐢𝐨𝗇 𝗍𝐚𝖻𝗅𝐞 𝖿𝐨𝗋𝐞𝗇𝗌𝐢𝖼 𝗁𝐢𝗇𝗍𝗌 |
+| `statistical_steg` | 𝗌𝗍𝐚𝗍𝐢𝗌𝗍𝐢𝖼𝐚𝗅 𝖽𝐞𝗍𝐞𝖼𝗍𝐢𝐨𝗇 𝗁𝐞𝐮𝗋𝐢𝗌𝗍𝐢𝖼𝗌 𝖿𝐨𝗋 𝐞𝗆𝖻𝐞𝖽𝖽𝐞𝖽 𝗌𝐢𝗀𝗇𝐚𝗅𝗌 |
+| `payload_unwrap` | 𝐮𝗇𝗐𝗋𝐚𝗉 𝖻𝐚𝗌𝐞64/𝖻𝐚𝗌𝐞91/𝗑𝐨𝗋/𝗋𝐨𝗍 𝗐𝗋𝐚𝗉𝗉𝐞𝗋 𝗅𝐚𝗒𝐞𝗋𝗌 |
+| `xor_flag_sweep` | 𝗄𝐞𝗒𝗐𝐨𝗋𝖽-𝗀𝐮𝐢𝖽𝐞𝖽 𝗑𝐨𝗋 𝗌𝗐𝐞𝐞𝗉 𝖿𝐨𝗋 𝖼𝗍𝖿-𝗌𝗍𝗒𝗅𝐞 𝗌𝐢𝗀𝗇𝐚𝗅𝗌 |
+| `randomizer_decode` | 𝗌𝗁𝐮𝖿𝖿𝗅𝐞/𝗑𝐨𝗋 𝖼𝐚𝗇𝖽𝐢𝖽𝐚𝗍𝐞 𝖽𝐞𝖼𝐨𝖽𝐞𝗌 𝖿𝐨𝗋 𝐨𝖻𝖿𝐮𝗌𝖼𝐚𝗍𝐞𝖽 𝗉𝗅𝐚𝐢𝗇𝗍𝐞𝗑𝗍 |
+| `decomposer` | 𝗋𝐞𝗇𝖽𝐞𝗋 𝗉𝐞𝗋-𝗉𝗅𝐚𝗇𝐞 𝐢𝗆𝐚𝗀𝐞𝗌 𝖿𝐨𝗋 𝗏𝐢𝗌𝐮𝐚𝗅 𝐢𝗇𝗌𝗉𝐞𝖼𝗍𝐢𝐨𝗇 |
 
-**external tools (19):**
+**𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌 (19):**
 
-| tool | what it does |
+| 𝗍𝐨𝐨𝗅 | 𝗐𝗁𝐚𝗍 𝐢𝗍 𝖽𝐨𝐞𝗌 |
 |------|-------------|
-| `binwalk` | signature scan for embedded file segments |
-| `foremost` | header/footer carving for hidden file recovery |
-| `exiftool` | metadata and profile anomaly extraction |
-| `strings` | readable byte sequences from carrier file |
-| `steghide` | steghide extraction using provided password |
-| `zsteg` | png/bmp lsb brute and signature extraction |
-| `stegpy` | python stego tool probe |
-| `stegolsb` | stego-lsb extraction tool |
-| `lsbsteg` | LSB-Steganography tool |
-| `stegano_lsb` | stegano lsb extraction |
-| `stegano_lsb_set` | stegano lsb-set extraction |
-| `stegano_red` | stegano red channel extraction |
-| `cloackedpixel` | cloacked-pixel stego tool |
-| `cloackedpixel_analyse` | cloacked-pixel analysis mode |
-| `stegsnow` | whitespace steganography (snow) |
-| `stegify` | go-based image stego tool |
-| `openstego` | java-based stego suite |
-| `file` | file type detection |
-| `7z` | archive extraction |
+| `binwalk` | 𝗌𝐢𝗀𝗇𝐚𝗍𝐮𝗋𝐞 𝗌𝖼𝐚𝗇 𝖿𝐨𝗋 𝐞𝗆𝖻𝐞𝖽𝖽𝐞𝖽 𝖿𝐢𝗅𝐞 𝗌𝐞𝗀𝗆𝐞𝗇𝗍𝗌 |
+| `foremost` | 𝗁𝐞𝐚𝖽𝐞𝗋/𝖿𝐨𝐨𝗍𝐞𝗋 𝖼𝐚𝗋𝗏𝐢𝗇𝗀 𝖿𝐨𝗋 𝗁𝐢𝖽𝖽𝐞𝗇 𝖿𝐢𝗅𝐞 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 |
+| `exiftool` | 𝗆𝐞𝗍𝐚𝖽𝐚𝗍𝐚 𝐚𝗇𝖽 𝗉𝗋𝐨𝖿𝐢𝗅𝐞 𝐚𝗇𝐨𝗆𝐚𝗅𝗒 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `strings` | 𝗋𝐞𝐚𝖽𝐚𝖻𝗅𝐞 𝖻𝗒𝗍𝐞 𝗌𝐞𝗊𝐮𝐞𝗇𝖼𝐞𝗌 𝖿𝗋𝐨𝗆 𝖼𝐚𝗋𝗋𝐢𝐞𝗋 𝖿𝐢𝗅𝐞 |
+| `steghide` | 𝗌𝗍𝐞𝗀𝗁𝐢𝖽𝐞 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝐮𝗌𝐢𝗇𝗀 𝗉𝗋𝐨𝗏𝐢𝖽𝐞𝖽 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 |
+| `zsteg` | 𝗉𝗇𝗀/𝖻𝗆𝗉 𝗅𝗌𝖻 𝖻𝗋𝐮𝗍𝐞 𝐚𝗇𝖽 𝗌𝐢𝗀𝗇𝐚𝗍𝐮𝗋𝐞 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `stegpy` | 𝗉𝗒𝗍𝗁𝐨𝗇-𝖻𝐚𝗌𝐞𝖽 𝗌𝐢𝗀𝗇𝐚𝗅 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝗍𝐨𝐨𝗅 |
+| `stegolsb` | 𝗅𝗌𝖻 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝗍𝐨𝐨𝗅 |
+| `lsbsteg` | 𝗅𝗌𝖻 𝗌𝐢𝗀𝗇𝐚𝗅 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 |
+| `stegano_lsb` | 𝗌𝗍𝐞𝗀𝐚𝗇𝐨 𝗅𝗌𝖻 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `stegano_lsb_set` | 𝗌𝗍𝐞𝗀𝐚𝗇𝐨 𝗅𝗌𝖻-𝗌𝐞𝗍 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `stegano_red` | 𝗌𝗍𝐞𝗀𝐚𝗇𝐨 𝗋𝐞𝖽 𝖼𝗁𝐚𝗇𝗇𝐞𝗅 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `cloackedpixel` | 𝖼𝗅𝐨𝐚𝖼𝗄𝐞𝖽-𝗉𝐢𝗑𝐞𝗅 𝗌𝐢𝗀𝗇𝐚𝗅 𝗍𝐨𝐨𝗅 |
+| `cloackedpixel_analyse` | 𝖼𝗅𝐨𝐚𝖼𝗄𝐞𝖽-𝗉𝐢𝗑𝐞𝗅 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝗆𝐨𝖽𝐞 |
+| `stegsnow` | 𝗐𝗁𝐢𝗍𝐞𝗌𝗉𝐚𝖼𝐞 𝗌𝐢𝗀𝗇𝐚𝗅 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 (𝗌𝗇𝐨𝗐) |
+| `stegify` | 𝗀𝐨-𝖻𝐚𝗌𝐞𝖽 𝐢𝗆𝐚𝗀𝐞 𝗌𝐢𝗀𝗇𝐚𝗅 𝗍𝐨𝐨𝗅 |
+| `openstego` | 𝗃𝐚𝗏𝐚-𝖻𝐚𝗌𝐞𝖽 𝗌𝐢𝗀𝗇𝐚𝗅 𝗌𝐮𝐢𝗍𝐞 |
+| `file` | 𝖿𝐢𝗅𝐞 𝗍𝗒𝗉𝐞 𝖽𝐞𝗍𝐞𝖼𝗍𝐢𝐨𝗇 |
+| `7z` | 𝐚𝗋𝖼𝗁𝐢𝗏𝐞 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
 
-### deep (eta: 3m - 12m)
-adds deep-frequency and plane-carving passes for stronger recovery odds.
+### 𝖽𝐞𝐞𝗉 (𝐞𝗍𝐚: 3𝗆 - 12𝗆)
+𝐚𝖽𝖽𝗌 𝖽𝐞𝐞𝗉-𝖿𝗋𝐞𝗊𝐮𝐞𝗇𝖼𝗒 𝐚𝗇𝖽 𝗉𝗅𝐚𝗇𝐞-𝖼𝐚𝗋𝗏𝐢𝗇𝗀 𝗉𝐚𝗌𝗌𝐞𝗌 𝖿𝐨𝗋 𝗌𝗍𝗋𝐨𝗇𝗀𝐞𝗋 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 𝐨𝖽𝖽𝗌.
 
-**internal analyzers (20):** all balanced analyzers plus:
+**𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 (20):** 𝐚𝗅𝗅 𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 𝗉𝗅𝐮𝗌:
 
-| analyzer | description |
+| 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 | 𝖽𝐞𝗌𝖼𝗋𝐢𝗉𝗍𝐢𝐨𝗇 |
 |----------|-------------|
-| `plane_carver` | file signature carving over many bitstream traversals |
-| `outguess` | outguess extraction pass with password |
+| `plane_carver` | 𝖿𝐢𝗅𝐞 𝗌𝐢𝗀𝗇𝐚𝗍𝐮𝗋𝐞 𝖼𝐚𝗋𝗏𝐢𝗇𝗀 𝐨𝗏𝐞𝗋 𝗆𝐚𝗇𝗒 𝖻𝐢𝗍𝗌𝗍𝗋𝐞𝐚𝗆 𝗍𝗋𝐚𝗏𝐞𝗋𝗌𝐚𝗅𝗌 |
+| `outguess` | 𝐨𝐮𝗍𝗀𝐮𝐞𝗌𝗌 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝗉𝐚𝗌𝗌 𝗐𝐢𝗍𝗁 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 |
 
-**external tools (35):** all balanced tools plus:
+**𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌 (35):** 𝐚𝗅𝗅 𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽 𝗍𝐨𝐨𝗅𝗌 𝗉𝗅𝐮𝗌:
 
-| tool | what it does |
+| 𝗍𝐨𝐨𝗅 | 𝗐𝗁𝐚𝗍 𝐢𝗍 𝖽𝐨𝐞𝗌 |
 |------|-------------|
-| `outguess` | outguess stego extraction with password |
-| `stegbreak` | jpeg stego password cracking |
-| `stegseek` | steghide seed/password cracking |
-| `stegcracker` | steghide password brute-force |
-| `fcrackzip` | zip password cracking |
-| `stegoveritas` | comprehensive stego analysis suite |
-| `bulk_extractor` | bulk data extraction and carving |
-| `scalpel` | file carving engine |
-| `hideme` | audio/image hiding tool |
-| `mp3stego_encode` | mp3 steganography encoder probe |
-| `mp3stego_decode` | mp3 steganography decoder probe |
-| `jphide` | jpeg hiding tool |
-| `jphs` | jpeg seek probe |
-| `jpseek` | jpeg stego extraction |
-| `stegexpose` | statistical steganalysis |
+| `outguess` | 𝐨𝐮𝗍𝗀𝐮𝐞𝗌𝗌 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝗐𝐢𝗍𝗁 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 |
+| `stegbreak` | 𝗃𝗉𝐞𝗀 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 𝖼𝗋𝐚𝖼𝗄𝐢𝗇𝗀 |
+| `stegseek` | 𝗌𝗍𝐞𝗀𝗁𝐢𝖽𝐞 𝗌𝐞𝐞𝖽/𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 𝖼𝗋𝐚𝖼𝗄𝐢𝗇𝗀 |
+| `stegcracker` | 𝗌𝗍𝐞𝗀𝗁𝐢𝖽𝐞 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 𝖻𝗋𝐮𝗍𝐞-𝖿𝐨𝗋𝖼𝐞 |
+| `fcrackzip` | 𝗓𝐢𝗉 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 𝖼𝗋𝐚𝖼𝗄𝐢𝗇𝗀 |
+| `stegoveritas` | 𝖼𝐨𝗆𝗉𝗋𝐞𝗁𝐞𝗇𝗌𝐢𝗏𝐞 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝗌𝐮𝐢𝗍𝐞 |
+| `bulk_extractor` | 𝖻𝐮𝗅𝗄 𝖽𝐚𝗍𝐚 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 𝐚𝗇𝖽 𝖼𝐚𝗋𝗏𝐢𝗇𝗀 |
+| `scalpel` | 𝖿𝐢𝗅𝐞 𝖼𝐚𝗋𝗏𝐢𝗇𝗀 𝐞𝗇𝗀𝐢𝗇𝐞 |
+| `hideme` | 𝐚𝐮𝖽𝐢𝐨/𝐢𝗆𝐚𝗀𝐞 𝗁𝐢𝖽𝐢𝗇𝗀 𝗍𝐨𝐨𝗅 |
+| `mp3stego_encode` | 𝗆𝗉3 𝗌𝐢𝗀𝗇𝐚𝗅 𝐞𝗇𝖼𝐨𝖽𝐞𝗋 𝗉𝗋𝐨𝖻𝐞 |
+| `mp3stego_decode` | 𝗆𝗉3 𝗌𝐢𝗀𝗇𝐚𝗅 𝖽𝐞𝖼𝐨𝖽𝐞𝗋 𝗉𝗋𝐨𝖻𝐞 |
+| `jphide` | 𝗃𝗉𝐞𝗀 𝗁𝐢𝖽𝐢𝗇𝗀 𝗍𝐨𝐨𝗅 |
+| `jphs` | 𝗃𝗉𝐞𝗀 𝗌𝐞𝐞𝗄 𝗉𝗋𝐨𝖻𝐞 |
+| `jpseek` | 𝗃𝗉𝐞𝗀 𝗌𝐢𝗀𝗇𝐚𝗅 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇 |
+| `stegexpose` | 𝗌𝗍𝐚𝗍𝐢𝗌𝗍𝐢𝖼𝐚𝗅 𝗌𝐢𝗀𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 |
 
-**auto-enabled options:** spread spectrum decoding, binwalk extraction.
+**𝐚𝐮𝗍𝐨-𝐞𝗇𝐚𝖻𝗅𝐞𝖽 𝐨𝗉𝗍𝐢𝐨𝗇𝗌:** 𝗌𝗉𝗋𝐞𝐚𝖽 𝗌𝗉𝐞𝖼𝗍𝗋𝐮𝗆 𝖽𝐞𝖼𝐨𝖽𝐢𝗇𝗀, 𝖻𝐢𝗇𝗐𝐚𝗅𝗄 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇.
 
-### forensic (eta: 8m - 30m)
-maximum depth with manual/interactive tool hooks enabled.
+### 𝖿𝐨𝗋𝐞𝗇𝗌𝐢𝖼 (𝐞𝗍𝐚: 8𝗆 - 30𝗆)
+𝗆𝐚𝗑𝐢𝗆𝐮𝗆 𝖽𝐞𝗉𝗍𝗁 𝗐𝐢𝗍𝗁 𝗆𝐚𝗇𝐮𝐚𝗅/𝐢𝗇𝗍𝐞𝗋𝐚𝖼𝗍𝐢𝗏𝐞 𝗍𝐨𝐨𝗅 𝗁𝐨𝐨𝗄𝗌 𝐞𝗇𝐚𝖻𝗅𝐞𝖽.
 
-**internal analyzers (20):** same as deep.
+**𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌 (20):** 𝗌𝐚𝗆𝐞 𝐚𝗌 𝖽𝐞𝐞𝗉.
 
-**external tools (45):** all deep tools plus:
+**𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌 (45):** 𝐚𝗅𝗅 𝖽𝐞𝐞𝗉 𝗍𝐨𝐨𝗅𝗌 𝗉𝗅𝐮𝗌:
 
-| tool | what it does |
+| 𝗍𝐨𝐨𝗅 | 𝗐𝗁𝐚𝗍 𝐢𝗍 𝖽𝐨𝐞𝗌 |
 |------|-------------|
-| `openpuff` | gui multi-carrier stego (presence probe) |
-| `deepsound` | audio stego gui tool (presence probe) |
-| `stegosuite` | java gui stego suite (presence probe) |
-| `testdisk` | interactive disk/partition recovery |
-| `photorec` | interactive file recovery |
-| `wireshark` | network packet analysis |
-| `bvi` | binary/hex editor |
-| `stegsolve` | visual stego analysis (bit planes, transforms) |
-| `qrencode` | qr code generation |
-| `sonic_visualiser` | audio spectrum forensics (presence probe) |
+| `openpuff` | 𝗀𝐮𝐢 𝗆𝐮𝗅𝗍𝐢-𝖼𝐚𝗋𝗋𝐢𝐞𝗋 𝗍𝐨𝐨𝗅 (𝗉𝗋𝐞𝗌𝐞𝗇𝖼𝐞 𝗉𝗋𝐨𝖻𝐞) |
+| `deepsound` | 𝐚𝐮𝖽𝐢𝐨 𝗀𝐮𝐢 𝗍𝐨𝐨𝗅 (𝗉𝗋𝐞𝗌𝐞𝗇𝖼𝐞 𝗉𝗋𝐨𝖻𝐞) |
+| `stegosuite` | 𝗃𝐚𝗏𝐚 𝗀𝐮𝐢 𝗌𝐮𝐢𝗍𝐞 (𝗉𝗋𝐞𝗌𝐞𝗇𝖼𝐞 𝗉𝗋𝐨𝖻𝐞) |
+| `testdisk` | 𝐢𝗇𝗍𝐞𝗋𝐚𝖼𝗍𝐢𝗏𝐞 𝖽𝐢𝗌𝗄/𝗉𝐚𝗋𝗍𝐢𝗍𝐢𝐨𝗇 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 |
+| `photorec` | 𝐢𝗇𝗍𝐞𝗋𝐚𝖼𝗍𝐢𝗏𝐞 𝖿𝐢𝗅𝐞 𝗋𝐞𝖼𝐨𝗏𝐞𝗋𝗒 |
+| `wireshark` | 𝗇𝐞𝗍𝗐𝐨𝗋𝗄 𝗉𝐚𝖼𝗄𝐞𝗍 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 |
+| `bvi` | 𝖻𝐢𝗇𝐚𝗋𝗒/𝗁𝐞𝗑 𝐞𝖽𝐢𝗍𝐨𝗋 |
+| `stegsolve` | 𝗏𝐢𝗌𝐮𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 (𝖻𝐢𝗍 𝗉𝗅𝐚𝗇𝐞𝗌, 𝗍𝗋𝐚𝗇𝗌𝖿𝐨𝗋𝗆𝗌) |
+| `qrencode` | 𝗊𝗋 𝖼𝐨𝖽𝐞 𝗀𝐞𝗇𝐞𝗋𝐚𝗍𝐢𝐨𝗇 |
+| `sonic_visualiser` | 𝐚𝐮𝖽𝐢𝐨 𝗌𝗉𝐞𝖼𝗍𝗋𝐮𝗆 𝖿𝐨𝗋𝐞𝗇𝗌𝐢𝖼𝗌 (𝗉𝗋𝐞𝗌𝐞𝗇𝖼𝐞 𝗉𝗋𝐨𝖻𝐞) |
 
-**auto-enabled options:** spread spectrum decoding, binwalk extraction, invisible unicode sweep (all tiers, high aggressiveness).
+**𝐚𝐮𝗍𝐨-𝐞𝗇𝐚𝖻𝗅𝐞𝖽 𝐨𝗉𝗍𝐢𝐨𝗇𝗌:** 𝗌𝗉𝗋𝐞𝐚𝖽 𝗌𝗉𝐞𝖼𝗍𝗋𝐮𝗆 𝖽𝐞𝖼𝐨𝖽𝐢𝗇𝗀, 𝖻𝐢𝗇𝗐𝐚𝗅𝗄 𝐞𝗑𝗍𝗋𝐚𝖼𝗍𝐢𝐨𝗇, 𝐢𝗇𝗏𝐢𝗌𝐢𝖻𝗅𝐞 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗌𝗐𝐞𝐞𝗉 (𝐚𝗅𝗅 𝗍𝐢𝐞𝗋𝗌, 𝗁𝐢𝗀𝗁 𝐚𝗀𝗀𝗋𝐞𝗌𝗌𝐢𝗏𝐞𝗇𝐞𝗌𝗌).
 
 ---
 
-## additional tooling in the docker image
+## 𝐚𝖽𝖽𝐢𝗍𝐢𝐨𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝐢𝗇 𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗆𝐚𝗀𝐞
 
-the docker image also installs these utilities used by the analyzer pipeline:
+𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗆𝐚𝗀𝐞 𝐚𝗅𝗌𝐨 𝐢𝗇𝗌𝗍𝐚𝗅𝗅𝗌 𝗍𝗁𝐞𝗌𝐞 𝐮𝗍𝐢𝗅𝐢𝗍𝐢𝐞𝗌 𝐮𝗌𝐞𝖽 𝖻𝗒 𝗍𝗁𝐞 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 𝗉𝐢𝗉𝐞𝗅𝐢𝗇𝐞:
 
-| category | tools |
+| 𝖼𝐚𝗍𝐞𝗀𝐨𝗋𝗒 | 𝗍𝐨𝐨𝗅𝗌 |
 |----------|-------|
-| **image metadata** | `identify`, `convert`, `jpeginfo`, `jpegsnoop`, `jhead`, `exiv2`, `exifprobe`, `pngcheck`, `pngtools`, `mediainfo` |
-| **image format** | `jpegtran`, `cjpeg`, `djpeg`, `optipng`, `pngcrush`, `jpegdump`, `jpegrescan`, `pngfix`, `gifextract`, `webpinfo`, `webpmux` |
-| **detection** | `stegdetect`, `jsteg`, `zbarimg`, `tesseract` |
-| **media/audio** | `ffmpeg`, `ffprobe`, `sox` |
-| **pdf** | `pdfinfo`, `pdftotext`, `pdfimages`, `qpdf` |
-| **binary analysis** | `radare2`, `rizin`, `hexyl`, `xxd`, `rg` |
-| **network/disk** | `tshark`, `sleuthkit` (`mmls`), `volatility` |
-| **archives** | `tar`, `gzip`, `bzip2`, `unzip`, `unsquashfs`, `xz` |
+| **𝐢𝗆𝐚𝗀𝐞 𝗆𝐞𝗍𝐚𝖽𝐚𝗍𝐚** | `identify`, `convert`, `jpeginfo`, `jpegsnoop`, `jhead`, `exiv2`, `exifprobe`, `pngcheck`, `pngtools`, `mediainfo` |
+| **𝐢𝗆𝐚𝗀𝐞 𝖿𝐨𝗋𝗆𝐚𝗍** | `jpegtran`, `cjpeg`, `djpeg`, `optipng`, `pngcrush`, `jpegdump`, `jpegrescan`, `pngfix`, `gifextract`, `webpinfo`, `webpmux` |
+| **𝖽𝐞𝗍𝐞𝖼𝗍𝐢𝐨𝗇** | `stegdetect`, `jsteg`, `zbarimg`, `tesseract` |
+| **𝗆𝐞𝖽𝐢𝐚/𝐚𝐮𝖽𝐢𝐨** | `ffmpeg`, `ffprobe`, `sox` |
+| **𝗉𝖽𝖿** | `pdfinfo`, `pdftotext`, `pdfimages`, `qpdf` |
+| **𝖻𝐢𝗇𝐚𝗋𝗒 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌** | `radare2`, `rizin`, `hexyl`, `xxd`, `rg` |
+| **𝗇𝐞𝗍𝗐𝐨𝗋𝗄/𝖽𝐢𝗌𝗄** | `tshark`, `sleuthkit` (`mmls`), `volatility` |
+| **𝐚𝗋𝖼𝗁𝐢𝗏𝐞𝗌** | `tar`, `gzip`, `bzip2`, `unzip`, `unsquashfs`, `xz` |
 
 ---
 
-## api star chart
+## 𝐚𝗉𝐢 𝗌𝗍𝐚𝗋 𝖼𝗁𝐚𝗋𝗍
 
-### `POST /api/encode`
-form-data fields:
-- `image` (required file, png or jpeg, max 8 mb).
-- `encodeMethod` one of: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
-- `payloadMode`: `text` or `file`.
-- `text` payload (when using text mode).
-- `payload` file payload (when using file mode).
-- `outputFormat`: `png` or `jpeg`.
+### `post /api/encode`
+𝖿𝐨𝗋𝗆-𝖽𝐚𝗍𝐚 𝖿𝐢𝐞𝗅𝖽𝗌:
+- `image` (𝗋𝐞𝗊𝐮𝐢𝗋𝐞𝖽 𝖿𝐢𝗅𝐞, 𝗉𝗇𝗀 𝐨𝗋 𝗃𝗉𝐞𝗀, 𝗆𝐚𝗑 8 𝗆𝖻).
+- `encodeMethod` 𝐨𝗇𝐞 𝐨𝖿: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
+- `payloadMode`: `text` 𝐨𝗋 `file`.
+- `text` 𝗍𝐞𝗑𝗍 𝗌𝐢𝗀𝗇𝐚𝗅 (𝗐𝗁𝐞𝗇 𝐮𝗌𝐢𝗇𝗀 𝗍𝐞𝗑𝗍 𝗆𝐨𝖽𝐞.
+- `payload` 𝖿𝐢𝗅𝐞 𝗌𝐢𝗀𝗇𝐚𝗅 (𝗐𝗁𝐞𝗇 𝐮𝗌𝐢𝗇𝗀 𝖿𝐢𝗅𝐞 𝗆𝐨𝖽𝐞.
+- `outputFormat`: `png` 𝐨𝗋 `jpeg`.
 
-simple/advanced controls:
-- `simple_lsb`: `mode` (`text` or `zlib`), `plane` (`RGB`, `R`, `G`, `B`, `A`, `RGBA`).
-- `advanced_lsb`: `channels` json object and optional uploaded files `file_R`, `file_G`, `file_B`, `file_A`.
+𝗌𝐢𝗆𝗉𝗅𝐞/𝐚𝖽𝗏𝐚𝗇𝖼𝐞𝖽 𝖼𝐨𝗇𝗍𝗋𝐨𝗅𝗌:
+- `simple_lsb`: `mode` (`text` 𝐨𝗋 `zlib`), `plane` (`RGB`, `R`, `G`, `B`, `A`, `RGBA`).
+- `advanced_lsb`: `channels` 𝗃𝗌𝐨𝗇 𝐨𝖻𝗃𝐞𝖼𝗍 𝐚𝗇𝖽 𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅 𝐮𝗉𝗅𝐨𝐚𝖽𝐞𝖽 𝖿𝐢𝗅𝐞𝗌 `file_R`, `file_G`, `file_B`, `file_A`.
 
-method option fields:
+𝗆𝐞𝗍𝗁𝐨𝖽 𝐨𝗉𝗍𝐢𝐨𝗇 𝖿𝐢𝐞𝗅𝖽𝗌:
 - `lsbChannels`, `lsbBits`
 - `pvdDirection`, `pvdRange`
 - `dctRobustness`, `dctBlockSize`
@@ -223,14 +224,14 @@ method option fields:
 - `chromaSpace`, `chromaChannel`, `chromaIntensity`, `chromaPattern`
 - `pngChunkType`, `pngChunkKeyword`
 
-response: json containing `filename` and `data_url`.
+𝗋𝐞𝗌𝗉𝐨𝗇𝗌𝐞: 𝗃𝗌𝐨𝗇 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐢𝗇𝗀 `filename` 𝐚𝗇𝖽 `data_url`.
 
-### `POST /api/decode`
-form-data fields:
-- `image` (required file, max 8 mb)
-- `password` (optional)
+### `post /api/decode`
+𝖿𝐨𝗋𝗆-𝖽𝐚𝗍𝐚 𝖿𝐢𝐞𝗅𝖽𝗌:
+- `image` (𝗋𝐞𝗊𝐮𝐢𝗋𝐞𝖽 𝖿𝐢𝗅𝐞, 𝗆𝐚𝗑 8 𝗆𝖻)
+- `password` (𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅)
 - `analysisProfile` (`quick`, `balanced`, `deep`, `forensic`)
-- `selectedTools` (json array of analyzer ids)
+- `selectedTools` (𝗃𝗌𝐨𝗇 𝐚𝗋𝗋𝐚𝗒 𝐨𝖿 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 𝐢𝖽𝗌)
 - `spreadSpectrum` (`true`/`false`)
 - `binwalkExtract` (`true`/`false`)
 - `unicodeSweep` (`true`/`false`)
@@ -238,61 +239,59 @@ form-data fields:
 - `unicodeSeparators` (`true`/`false`)
 - `unicodeAggressiveness` (`low`, `balanced`, `high`)
 - `decodeOption` (`auto_detect`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`)
-- `deep` (`true`/`false`) — legacy override, profile controls this
-- `manual` (`true`/`false`) — legacy override, profile controls this
 
-response: analysis json with `results`, optional `artifacts`, and `meta`.
+𝗋𝐞𝗌𝗉𝐨𝗇𝗌𝐞: 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝗃𝗌𝐨𝗇 𝗐𝐢𝗍𝗁 `results`, 𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅 `artifacts`, 𝐚𝗇𝖽 `meta`.
 
-### profile and tooling endpoints
-- `GET /api/tools`
-- `GET /api/profiles`
-- `GET /api/analyzers?profile=<id>`
+### 𝗉𝗋𝐨𝖿𝐢𝗅𝐞 𝐚𝗇𝖽 𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝐞𝗇𝖽𝗉𝐨𝐢𝗇𝗍𝗌
+- `get /api/tools`
+- `get /api/profiles`
+- `get /api/analyzers?profile=<id>`
 
-### lite endpoints
-- `GET /lite`
-- `GET /api/lite/tools`
-- `POST /api/lite/encode` (supports `simple_lsb` and `advanced_lsb` only)
-- `POST /api/lite/decode`
+### 𝗅𝐢𝗍𝐞 𝐞𝗇𝖽𝗉𝐨𝐢𝗇𝗍𝗌
+- `get /lite`
+- `get /api/lite/tools`
+- `post /api/lite/encode` (𝗌𝐮𝗉𝗉𝐨𝗋𝗍𝗌 `simple_lsb` 𝐚𝗇𝖽 `advanced_lsb` 𝐨𝗇𝗅𝗒)
+- `post /api/lite/decode`
 
-lite encode notes:
-- `advanced_lsb` in lite outputs png only.
-- same 8 mb upload limit applies.
+𝗅𝐢𝗍𝐞 𝐞𝗇𝖼𝐨𝖽𝐞 𝗇𝐨𝗍𝐞𝗌:
+- `advanced_lsb` 𝐢𝗇 𝗅𝐢𝗍𝐞 𝐨𝐮𝗍𝗉𝐮𝗍𝗌 𝗉𝗇𝗀 𝐨𝗇𝗅𝗒.
+- 𝗌𝐚𝗆𝐞 8 𝗆𝖻 𝐮𝗉𝗅𝐨𝐚𝖽 𝗅𝐢𝗆𝐢𝗍 𝐚𝗉𝗉𝗅𝐢𝐞𝗌.
 
-## render deployment stars
-### docker service
-- create a new render web service with environment set to docker.
-- point it to this repository.
-- render builds from `Dockerfile` and starts on `0.0.0.0:$PORT`.
+## 𝗋𝐞𝗇𝖽𝐞𝗋 𝖽𝐞𝗉𝗅𝐨𝗒𝗆𝐞𝗇𝗍 𝗌𝗍𝐚𝗋𝗌
+### 𝖽𝐨𝖼𝗄𝐞𝗋 𝗌𝐞𝗋𝗏𝐢𝖼𝐞
+- 𝖼𝗋𝐞𝐚𝗍𝐞 𝐚 𝗇𝐞𝗐 𝗋𝐞𝗇𝖽𝐞𝗋 𝗐𝐞𝖻 𝗌𝐞𝗋𝗏𝐢𝖼𝐞 𝗐𝐢𝗍𝗁 𝐞𝗇𝗏𝐢𝗋𝐨𝗇𝗆𝐞𝗇𝗍 𝗌𝐞𝗍 𝗍𝐨 𝖽𝐨𝖼𝗄𝐞𝗋.
+- 𝗉𝐨𝐢𝗇𝗍 𝐢𝗍 𝗍𝐨 𝗍𝗁𝐢𝗌 𝗋𝐞𝗉𝐨𝗌𝐢𝗍𝐨𝗋𝗒.
+- 𝗋𝐞𝗇𝖽𝐞𝗋 𝖻𝐮𝐢𝗅𝖽𝗌 𝖿𝗋𝐨𝗆 `Dockerfile` 𝐚𝗇𝖽 𝗌𝗍𝐚𝗋𝗍𝗌 𝐨𝗇 `0.0.0.0:$PORT`.
 
-### blueprint (`render.yaml`)
-- create a render blueprint.
-- render reads `render.yaml` and provisions the docker web service.
+### 𝖻𝗅𝐮𝐞𝗉𝗋𝐢𝗇𝗍 (`render.yaml`)
+- 𝖼𝗋𝐞𝐚𝗍𝐞 𝐚 𝗋𝐞𝗇𝖽𝐞𝗋 𝖻𝗅𝐮𝐞𝗉𝗋𝐢𝗇𝗍.
+- 𝗋𝐞𝗇𝖽𝐞𝗋 𝗋𝐞𝐚𝖽𝗌 `render.yaml` 𝐚𝗇𝖽 𝗉𝗋𝐨𝗏𝐢𝗌𝐢𝐨𝗇𝗌 𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝗐𝐞𝖻 𝗌𝐞𝗋𝗏𝐢𝖼𝐞.
 
-## smoke verification
-inside the running container:
+## 𝗌𝗆𝐨𝗄𝐞 𝗏𝐞𝗋𝐢𝖿𝐢𝖼𝐚𝗍𝐢𝐨𝗇
+𝐢𝗇𝗌𝐢𝖽𝐞 𝗍𝗁𝐞 𝗋𝐮𝗇𝗇𝐢𝗇𝗀 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋:
 ```bash
 docker compose exec web bash -lc "which binwalk; which foremost; which steghide; which outguess; which zsteg; which exiftool; which strings; which 7z; which file; which unzip; which unsquashfs"
 docker compose exec web make smoke
 ```
 
-if you are on a restricted runner without the full toolchain:
+𝐢𝖿 𝗒𝐨𝐮 𝐚𝗋𝐞 𝐨𝗇 𝐚 𝗋𝐞𝗌𝗍𝗋𝐢𝖼𝗍𝐞𝖽 𝗋𝐮𝗇𝗇𝐞𝗋 𝗐𝐢𝗍𝗁𝐨𝐮𝗍 𝗍𝗁𝐞 𝖿𝐮𝗅𝗅 𝗍𝐨𝐨𝗅𝖼𝗁𝐚𝐢𝗇:
 ```bash
 ALLOW_MISSING_TOOLS=1 make smoke
 ```
 
-## troubleshooting under cloud cover
-- if the port is busy, change host mapping in `docker-compose.yml`.
-- if docker is not running, start docker desktop/daemon first.
-- if a tool is missing, the ui marks it missing and continues where possible.
-- first docker build is heavy because the image installs broad stego tooling.
+## 𝗍𝗋𝐨𝐮𝖻𝗅𝐞𝗌𝗁𝐨𝐨𝗍𝐢𝗇𝗀 𝐮𝗇𝖽𝐞𝗋 𝖼𝗅𝐨𝐮𝖽 𝖼𝐨𝗏𝐞𝗋
+- 𝐢𝖿 𝗍𝗁𝐞 𝗉𝐨𝗋𝗍 𝐢𝗌 𝖻𝐮𝗌𝗒, 𝖼𝗁𝐚𝗇𝗀𝐞 𝗁𝐨𝗌𝗍 𝗆𝐚𝗉𝗉𝐢𝗇𝗀 𝐢𝗇 `docker-compose.yml`.
+- 𝐢𝖿 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗌 𝗇𝐨𝗍 𝗋𝐮𝗇𝗇𝐢𝗇𝗀, 𝗌𝗍𝐚𝗋𝗍 𝖽𝐨𝖼𝗄𝐞𝗋 𝖽𝐞𝗌𝗄𝗍𝐨𝗉/𝖽𝐚𝐞𝗆𝐨𝗇 𝖿𝐢𝗋𝗌𝗍.
+- 𝐢𝖿 𝐚 𝗍𝐨𝐨𝗅 𝐢𝗌 𝗆𝐢𝗌𝗌𝐢𝗇𝗀, 𝗍𝗁𝐞 𝐮𝐢 𝗆𝐚𝗋𝗄𝗌 𝐢𝗍 𝗆𝐢𝗌𝗌𝐢𝗇𝗀 𝐚𝗇𝖽 𝖼𝐨𝗇𝗍𝐢𝗇𝐮𝐞𝗌 𝗐𝗁𝐞𝗋𝐞 𝗉𝐨𝗌𝗌𝐢𝖻𝗅𝐞.
+- 𝖿𝐢𝗋𝗌𝗍 𝖽𝐨𝖼𝗄𝐞𝗋 𝖻𝐮𝐢𝗅𝖽 𝐢𝗌 𝗁𝐞𝐚𝗏𝗒 𝖻𝐞𝖼𝐚𝐮𝗌𝐞 𝗍𝗁𝐞 𝐢𝗆𝐚𝗀𝐞 𝐢𝗇𝗌𝗍𝐚𝗅𝗅𝗌 𝖻𝗋𝐨𝐚𝖽 𝗍𝐨𝐨𝗅𝐢𝗇𝗀.
 
-## security horizon
-do not expose the flask debugger on untrusted networks.
-for production, run behind a proper reverse proxy and keep debug mode off.
+## 𝗌𝐞𝖼𝐮𝗋𝐢𝗍𝗒 𝗁𝐨𝗋𝐢𝗓𝐨𝗇
+𝖽𝐨 𝗇𝐨𝗍 𝐞𝗑𝗉𝐨𝗌𝐞 𝗍𝗁𝐞 𝖿𝗅𝐚𝗌𝗄 𝖽𝐞𝖻𝐮𝗀𝗀𝐞𝗋 𝐨𝗇 𝐮𝗇𝗍𝗋𝐮𝗌𝗍𝐞𝖽 𝗇𝐞𝗍𝗐𝐨𝗋𝗄𝗌.
+𝖿𝐨𝗋 𝗉𝗋𝐨𝖽𝐮𝖼𝗍𝐢𝐨𝗇, 𝗋𝐮𝗇 𝖻𝐞𝗁𝐢𝗇𝖽 𝐚 𝗉𝗋𝐨𝗉𝐞𝗋 𝗋𝐞𝗏𝐞𝗋𝗌𝐞 𝗉𝗋𝐨𝗑𝗒 𝐚𝗇𝖽 𝗄𝐞𝐞𝗉 𝖽𝐞𝖻𝐮𝗀 𝗆𝐨𝖽𝐞 𝐨𝖿𝖿.
 
-## twitter note (lsb orbit stability)
-the twitter-safe compression guardrail is documented in `docs/twitter-encoding.md`.
-short version: the app pre-compresses and, when needed, downscales so png output stays near twitter's recompression threshold.
+## 𝗍𝗐𝐢𝗍𝗍𝐞𝗋 𝗇𝐨𝗍𝐞 (𝗅𝗌𝖻 𝐨𝗋𝖻𝐢𝗍 𝗌𝗍𝐚𝖻𝐢𝗅𝐢𝗍𝗒)
+𝗍𝗁𝐞 𝗍𝗐𝐢𝗍𝗍𝐞𝗋-𝗌𝐚𝖿𝐞 𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐢𝐨𝗇 𝗀𝐮𝐚𝗋𝖽𝗋𝐚𝐢𝗅 𝐢𝗌 𝖽𝐨𝖼𝐮𝗆𝐞𝗇𝗍𝐞𝖽 𝐢𝗇 `docs/twitter-encoding.md`.
+𝗌𝗁𝐨𝗋𝗍 𝗏𝐞𝗋𝗌𝐢𝐨𝗇: 𝗍𝗁𝐞 𝐚𝗉𝗉 𝗉𝗋𝐞-𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐞𝗌 𝐚𝗇𝖽, 𝗐𝗁𝐞𝗇 𝗇𝐞𝐞𝖽𝐞𝖽, 𝖽𝐨𝗐𝗇𝗌𝖼𝐚𝗅𝐞𝗌 𝗌𝐨 𝗉𝗇𝗀 𝐨𝐮𝗍𝗉𝐮𝗍 𝗌𝗍𝐚𝗒𝗌 𝗇𝐞𝐚𝗋 𝗍𝗐𝐢𝗍𝗍𝐞𝗋'𝗌 𝗋𝐞𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐢𝐨𝗇 𝗍𝗁𝗋𝐞𝗌𝗁𝐨𝗅𝖽.
 
-## license
-this repository is released under the mit license (`LICENSE`).
+## 𝗅𝐢𝖼𝐞𝗇𝗌𝐞
+𝗍𝗁𝐢𝗌 𝗋𝐞𝗉𝐨𝗌𝐢𝗍𝐨𝗋𝗒 𝐢𝗌 𝗋𝐞𝗅𝐞𝐚𝗌𝐞𝖽 𝐮𝗇𝖽𝐞𝗋 𝗍𝗁𝐞 𝗆𝐢𝗍 𝗅𝐢𝖼𝐞𝗇𝗌𝐞 (`LICENSE`).
