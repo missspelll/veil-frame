@@ -371,4 +371,4 @@ EXPOSE 5000
 ENV FLASK_ENV=production \
     FLASK_DEBUG=0
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --config gunicorn.conf.py app:app"]

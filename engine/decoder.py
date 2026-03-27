@@ -425,7 +425,7 @@ def _build_analyzer_plan(
                     ("audio_fft", analyze_audio_fft, (image_path, output_dir), {}),
                     ("audio_echo", analyze_audio_echo, (image_path, output_dir), {}),
                     ("matryoshka", analyze_matryoshka, (image_path, output_dir), {}),
-                    ("channel_cipher", analyze_channel_cipher, (image_path, output_dir), {}),
+                    ("channel_cipher", analyze_channel_cipher, (image_path, output_dir, password or ""), {}),
                 ]
             )
         else:
