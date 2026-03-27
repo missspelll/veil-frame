@@ -6,3 +6,6 @@ stegoveritas>=1.10
 stegcracker>=2.0.9
 volatility3>=2.5.2
 pytest>=7.4
+stegpy>=0.0.1
+stego-lsb>=1.4
+stegano>=0.11

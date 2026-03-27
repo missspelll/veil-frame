@@ -16,7 +16,6 @@
         <div class="lede-mini">⋆ 𝗅𝗌𝖻 ⋆ ✧ 𝖻𝐢𝗍 𝗉𝗅𝐚𝗇𝐞𝗌 ✧ ☾ 𝗆𝐞𝗍𝐚𝖽𝐚𝗍𝐚 ☽ ✦ 𝗓𝗌𝗍𝐞𝗀 ✦</div>
         <div class="lede-link">· 𝗀𝗂𝗍𝗁𝗎𝖻: <a href="https://github.com/missspelll/veil-frame">https://github.com/missspelll/veil-frame</a></div>
         <div class="lede-link">· 𝗅𝐢𝗍𝐞 𝗆𝐨𝖽𝐞: <a href="/lite">/lite</a></div>
-        <div class="lede-link">· 𝗎𝗇𝐢𝖼𝐨𝖽𝐞 𝗀𝗅𝗒𝗉𝗁 𝗆𝐚𝗉: <span class="mono-path">static/app.js :: unicode_lower</span></div>
       </div>
     </div>
   </header>
@@ -379,73 +378,88 @@
             <span class="input-hint">𝗉𝗇𝗀 𝐨𝗋 𝗃𝗉𝗀 𝗋𝐞𝖼𝐨𝗆𝗆𝐞𝗇𝖽𝐞𝖽. 𝗄𝐞𝐞𝗉 𝐢𝗍 𝐮𝗇𝖽𝐞𝗋 8 𝗆𝖻.</span>
           </div>
         </label>
-        <div class="field inline-group match-height">
-          <span>𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝗌𝖾𝗍𝗎𝗉</span>
-          <label class="option-group full">
-            <span>𝗋𝐞𝐚𝗌𝗈𝗇𝐢𝗇𝗀 𝖽𝐞𝗉𝗍𝗁</span>
-            <select id="analysis-profile" name="analysisProfile" aria-label="analysis profile">
-              <option value="quick">𝗊𝗎𝗂𝖼𝗄</option>
-              <option value="balanced" selected>𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽</option>
-              <option value="deep">𝖽𝐞𝐞𝗉</option>
-              <option value="forensic">𝖿𝗈𝗋𝐞𝗇𝗌𝗂𝖼</option>
-            </select>
-          </label>
-          <div class="profile-telemetry" id="profile-telemetry">
-            <div class="input-hint" id="profile-description">𝗅𝗈𝐚𝖽𝗂𝗇𝗀 𝗉𝗋𝗈𝖿𝗂𝗅𝐞…</div>
-            <div class="profile-chip-row">
+
+        <!-- profile selector + password -->
+        <div class="field decode-setup">
+          <div class="decode-setup-top">
+            <label class="option-group full">
+              <span>𝗋𝐞𝐚𝗌𝐨𝗇𝐢𝗇𝗀 𝖽𝐞𝗉𝗍𝗁</span>
+              <select id="analysis-profile" name="analysisProfile" aria-label="analysis profile">
+                <option value="quick">𝗊𝐮𝐢𝖼𝗄</option>
+                <option value="balanced" selected>𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽</option>
+                <option value="deep">𝖽𝐞𝐞𝗉</option>
+                <option value="forensic">𝖿𝐨𝗋𝐞𝗇𝗌𝐢𝖼</option>
+              </select>
+            </label>
+            <div class="profile-chip-row" id="profile-telemetry">
               <span class="profile-chip" id="analysis-eta">𝐞𝗍𝐚: --</span>
-              <span class="profile-chip" id="analysis-active-tools">𝗍𝗈𝗈𝗅𝗌: --</span>
+              <span class="profile-chip" id="analysis-active-tools">𝗍𝐨𝐨𝗅𝗌: --</span>
             </div>
+            <div class="input-hint" id="profile-description">𝗅𝐨𝐚𝖽𝐢𝗇𝗀 𝗉𝗋𝐨𝖿𝐢𝗅𝐞…</div>
           </div>
+          <div class="decode-password-row">
+            <input type="text" name="password" placeholder="𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 (𝐨𝐮𝗍𝗀𝐮𝐞𝗌𝗌 / 𝗌𝗍𝐞𝗀𝗁𝐢𝖽𝐞 / 𝗌𝗉𝗋𝐞𝐚𝖽)">
+          </div>
+        </div>
+
+        <!-- analyzer selector (own block, no overlap) -->
+        <div class="field decode-analyzers">
           <div class="tool-selector">
             <div class="tool-selector-head">
-              <span class="tool-selector-title">𝖺𝖼𝗍𝗂𝗏𝖾 𝖺𝗇𝖺𝗅𝗒𝗓𝖾𝗋𝗌</span>
+              <span class="tool-selector-title">𝐚𝖼𝗍𝐢𝗏𝐞 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌</span>
               <div class="tool-selector-actions">
                 <button type="button" class="mini-btn" id="select-profile-tools">𝗋𝐞𝖼</button>
-                <button type="button" class="mini-btn" id="select-all-tools">𝖺𝗅𝗅</button>
-                <button type="button" class="mini-btn" id="select-no-tools">𝗇𝗈𝗇𝐞</button>
+                <button type="button" class="mini-btn" id="select-all-tools">𝐚𝗅𝗅</button>
+                <button type="button" class="mini-btn" id="select-no-tools">𝗇𝐨𝗇𝐞</button>
               </div>
             </div>
             <div class="analyzer-grid" id="analyzer-grid"></div>
             <input type="hidden" name="selectedTools" id="selected-tools-input">
           </div>
-          <label class="inline">
-            <input type="checkbox" name="spreadSpectrum" value="true"> 𝗌𝗉𝗋𝐞𝗮𝖽 𝗌𝗉𝐞𝖼𝗍𝗋𝗎𝗆 (𝗉𝐚𝗌𝗌𝗐𝗈𝗋𝖽-𝖻𝐚𝗌𝐞𝖽)
-          </label>
-          <label class="inline">
-            <input type="checkbox" name="unicodeSweep" value="true"> 𝐢𝗇𝗏𝐢𝗌𝐢𝖻𝗅𝐞 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗌𝗐𝐞𝐞𝗉 (𝐨𝗉𝐭-𝐢𝗇)
-          </label>
-          <div class="unicode-options" id="unicode-options">
-            <label class="inline">
-              <input type="checkbox" name="unicodeTier1" value="true"> 𝗍𝐢𝐞𝗋1 (𝖿𝐨𝗋𝗆𝐚𝗍/𝖼𝐨𝗇𝗍𝗋𝐨𝗅)
-            </label>
-            <label class="inline">
-              <input type="checkbox" name="unicodeSeparators" value="true"> 𝗌𝐞𝗉𝐚𝗋𝐚𝗍𝐨𝗋𝗌 (𝗓𝗌/𝗓𝗅/𝗓𝗉)
-            </label>
-            <label class="inline">
-              <span>𝗋𝐚𝗐 𝗌𝖼𝐚𝗇</span>
-              <select name="unicodeAggressiveness" aria-label="raw scan aggressiveness">
-                <option value="low">𝗅𝐨𝗐</option>
-                <option value="balanced" selected>𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽</option>
-                <option value="high">𝗁𝐢𝗀𝗁</option>
-              </select>
-            </label>
-            <div class="input-hint">𝗋𝐚𝗐 𝗌𝖼𝐚𝗇 𝗆𝗈𝖽𝐞 𝖼𝐨𝗇𝗍𝗋𝗈𝗅𝗌 𝖽𝐞𝖼𝐨𝖽𝐞 𝗌𝗍𝗋𝗂𝖼𝗍𝗇𝐞𝗌𝗌 𝖿𝗈𝗋 𝗂𝗇𝗏𝗂𝗌𝗂𝖻𝗅𝐞 𝗆𝖺𝗋𝗄𝐞𝗋𝗌.</div>
-          </div>
-          <label class="inline" title="Runs binwalk -e to carve and unpack embedded files. Slower and may need helper tools.">
-            <input type="checkbox" name="binwalkExtract" value="true"> 𝖻𝐢𝗇𝗐𝐚𝗅𝗄: 𝐞𝗑𝗍𝗋𝐚𝖼𝗍 𝖼𝐚𝗋𝗏𝐞𝖽 𝖿𝐢𝗅𝐞𝗌
-          </label>
         </div>
-        <div class="field inline-group password-field match-height">
-          <span>𝐨𝐮𝗍𝗀𝐮𝐞𝗌𝗌 / 𝗌𝗉𝗋𝐞𝗮𝖽 𝗉𝐚𝗌𝗌𝗐𝗈𝗋𝖽</span>
-          <div class="inline password-row visible" id="outguess-password-field">
-            <input type="text" name="password" placeholder="𝖫𝐞𝐚𝗏𝐞 𝖻𝗅𝐚𝗇𝗄 𝐢𝖿 𝗇𝐨𝗇𝐞">
+
+        <!-- advanced options (collapsed by default) -->
+        <div class="field decode-advanced" id="decode-advanced">
+          <div class="decode-advanced-title">𝐚𝖽𝖽𝐢𝗍𝐢𝐨𝗇𝐚𝗅 𝐨𝗉𝗍𝐢𝐨𝗇𝗌</div>
+          <div class="decode-advanced-body">
+            <label class="inline">
+              <input type="checkbox" name="spreadSpectrum" value="true">
+              <span>𝗌𝗉𝗋𝐞𝐚𝖽 𝗌𝗉𝐞𝖼𝗍𝗋𝐮𝗆 𝖽𝐞𝖼𝐨𝖽𝐢𝗇𝗀</span>
+              <span class="input-hint">𝐮𝗌𝐞𝗌 𝗍𝗁𝐞 𝗉𝐚𝗌𝗌𝗐𝐨𝗋𝖽 𝐚𝖻𝐨𝗏𝐞 𝗍𝐨 𝖽𝐞𝖼𝐨𝖽𝐞 𝗌𝗉𝗋𝐞𝐚𝖽-𝗌𝗉𝐞𝖼𝗍𝗋𝐮𝗆 𝗉𝐚𝗒𝗅𝐨𝐚𝖽𝗌.</span>
+            </label>
+            <label class="inline" title="Runs binwalk -e to carve and unpack embedded files.">
+              <input type="checkbox" name="binwalkExtract" value="true">
+              <span>𝖻𝐢𝗇𝗐𝐚𝗅𝗄: 𝐞𝗑𝗍𝗋𝐚𝖼𝗍 𝖼𝐚𝗋𝗏𝐞𝖽 𝖿𝐢𝗅𝐞𝗌</span>
+              <span class="input-hint">𝗋𝐮𝗇𝗌 𝖻𝐢𝗇𝗐𝐚𝗅𝗄 -𝐞 𝗍𝐨 𝖼𝐚𝗋𝗏𝐞 𝐚𝗇𝖽 𝐮𝗇𝗉𝐚𝖼𝗄 𝐞𝗆𝖻𝐞𝖽𝖽𝐞𝖽 𝖿𝐢𝗅𝐞𝗌. 𝗌𝗅𝐨𝗐𝐞𝗋.</span>
+            </label>
+            <label class="inline">
+              <input type="checkbox" name="unicodeSweep" value="true">
+              <span>𝐢𝗇𝗏𝐢𝗌𝐢𝖻𝗅𝐞 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗌𝗐𝐞𝐞𝗉</span>
+            </label>
+            <div class="unicode-options" id="unicode-options">
+              <label class="inline">
+                <input type="checkbox" name="unicodeTier1" value="true">
+                <span>𝗍𝐢𝐞𝗋 1 (𝖿𝐨𝗋𝗆𝐚𝗍/𝖼𝐨𝗇𝗍𝗋𝐨𝗅 𝖼𝗁𝐚𝗋𝗌)</span>
+              </label>
+              <label class="inline">
+                <input type="checkbox" name="unicodeSeparators" value="true">
+                <span>𝗌𝐞𝗉𝐚𝗋𝐚𝗍𝐨𝗋𝗌 (𝗓𝗌/𝗓𝗅/𝗓𝗉)</span>
+              </label>
+              <label class="inline">
+                <span>𝗋𝐚𝗐 𝗌𝖼𝐚𝗇 𝐢𝗇𝗍𝐞𝗇𝗌𝐢𝗍𝗒</span>
+                <select name="unicodeAggressiveness" aria-label="raw scan aggressiveness">
+                  <option value="low">𝗅𝐨𝗐</option>
+                  <option value="balanced" selected>𝖻𝐚𝗅𝐚𝗇𝖼𝐞𝖽</option>
+                  <option value="high">𝗁𝐢𝗀𝗁</option>
+                </select>
+              </label>
+            </div>
           </div>
-          <div class="input-hint">𝗄𝐞𝗉𝗍 𝗌𝐞𝗉𝐚𝗋𝐚𝗍𝐞 𝗌𝗈 𝗒𝗈𝗎 𝖼𝐚𝗇 𝖿𝗅𝗂𝗉 𝗋𝐞𝖺𝗌𝗈𝗇𝐢𝗇𝗀 𝖽𝐞𝗉𝗍𝗁 𝗐𝗂𝗍𝗁𝗈𝐮𝗍 𝗅𝗈𝗌𝗂𝗇𝗀 𝗄𝐞𝗒 𝗂𝗇𝗉𝗎𝗍.</div>
         </div>
+
         <div class="action-cell">
           <button type="submit" class="primary left-align">𝗋𝐮𝗇 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌</button>
-          <div class="analysis-timer" id="analysis-timer">𝗌𝗍𝐚𝗍𝐮𝗌: 𝗂𝖽𝗅𝐞 · 00:00</div>
+          <div class="analysis-timer" id="analysis-timer">𝗌𝗍𝐚𝗍𝐮𝗌: 𝐢𝖽𝗅𝐞 · 00:00</div>
         </div>
         <div class="tooling-status">
           <div class="status-line tooling-title">𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝗌𝗍𝐚𝗍𝐮𝗌</div>

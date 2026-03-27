@@ -520,6 +520,32 @@ if (unicodeToggle) {
   syncUnicodeOptions();
 }
 
+const advancedOptionDefaults = {
+  quick:    { spread: false, binwalk: false, unicode: false, tier1: false, separators: false, aggressiveness: 'low' },
+  balanced: { spread: false, binwalk: false, unicode: false, tier1: false, separators: false, aggressiveness: 'low' },
+  deep:     { spread: true,  binwalk: true,  unicode: false, tier1: false, separators: false, aggressiveness: 'balanced' },
+  forensic: { spread: true,  binwalk: true,  unicode: true,  tier1: true,  separators: true,  aggressiveness: 'high' },
+};
+
+function syncAdvancedOptions(profileId) {
+  const defaults = advancedOptionDefaults[profileId] || advancedOptionDefaults.balanced;
+
+  const spreadEl = document.querySelector('input[name="spreadSpectrum"]');
+  const binwalkEl = document.querySelector('input[name="binwalkExtract"]');
+  const tier1El = document.querySelector('input[name="unicodeTier1"]');
+  const sepsEl = document.querySelector('input[name="unicodeSeparators"]');
+  const aggrEl = document.querySelector('select[name="unicodeAggressiveness"]');
+
+  if (spreadEl) spreadEl.checked = defaults.spread;
+  if (binwalkEl) binwalkEl.checked = defaults.binwalk;
+  if (unicodeToggle) unicodeToggle.checked = defaults.unicode;
+  if (tier1El) tier1El.checked = defaults.tier1;
+  if (sepsEl) sepsEl.checked = defaults.separators;
+  if (aggrEl) aggrEl.value = defaults.aggressiveness;
+
+  syncUnicodeOptions();
+}
+
 function startLiveTimer(prefix) {
   if (!analysisTimerEl) return () => '00:00';
   const started = Date.now();
@@ -564,8 +590,10 @@ async function loadProfilesAndTools() {
       analysisProfileSelect.value = profileState.byId[saved] ? saved : profileState.defaultProfile;
     }
 
-    await loadAnalyzerCatalog(selectedProfileId());
+    const initialProfile = selectedProfileId();
+    await loadAnalyzerCatalog(initialProfile);
     syncProfileUI();
+    syncAdvancedOptions(initialProfile);
   } catch {
     if (toolStatusEl) toolStatusEl.innerHTML = `<div class="status-line">${stylizeUi('tool status unavailable')}</div>`;
     if (profileDescriptionEl) profileDescriptionEl.textContent = stylizeUi('unable to load analysis profiles.');
@@ -785,6 +813,7 @@ if (analysisProfileSelect) {
     const profileId = selectedProfileId();
     await loadAnalyzerCatalog(profileId);
     syncProfileUI();
+    syncAdvancedOptions(profileId);
   });
 }
 

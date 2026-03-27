@@ -1,38 +1,40 @@
-# 𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞
+# veil-frame
 
-𝗏𝐞𝐢𝗅-𝖿𝗋𝐚𝗆𝐞 𝐢𝗌 𝐚 𝗌𝗍𝐚𝗋𝗅𝐢𝗍 𝖿𝗅𝐚𝗌𝗄 𝐨𝖻𝗌𝐞𝗋𝗏𝐚𝗍𝐨𝗋𝗒 𝖿𝐨𝗋 𝐢𝗆𝐚𝗀𝐞 𝗌𝗍𝐞𝗀𝐚𝗇𝐨𝗀𝗋𝐚𝗉𝗁𝗒.
-𝐢𝗍 𝗅𝐞𝗍𝗌 𝗒𝐨𝐮 𝗁𝐢𝖽𝐞 𝗉𝐚𝗒𝗅𝐨𝐚𝖽𝗌 𝐢𝗇 𝐨𝗇𝐞 𝐨𝗋𝖻𝐢𝗍 𝐚𝗇𝖽 𝗌𝗐𝐞𝐞𝗉 𝖿𝐨𝗋 𝗁𝐢𝖽𝖽𝐞𝗇 𝗌𝐢𝗀𝗇𝐚𝗅𝗌 𝐢𝗇 𝐚𝗇𝐨𝗍𝗁𝐞𝗋.
+veil-frame is a Flask observatory for image steganography.
+it lets you hide payloads in one orbit and sweep for hidden signals in another.
 
-𝐞𝗏𝐞𝗋𝗒 𝗏𝐢𝗌𝐢𝖻𝗅𝐞 𝗌𝐞𝗇𝗍𝐞𝗇𝖼𝐞 𝐢𝗇 𝗍𝗁𝐞 𝐮𝐢 𝐢𝗌 𝗌𝗁𝐚𝗉𝐞𝖽 𝖻𝗒 𝗍𝗁𝐞 𝗌𝐚𝗆𝐞 𝐮𝗇𝐢𝖼𝐨𝖽𝐞 𝗀𝗅𝗒𝗉𝗁 𝗆𝐚𝗉:
-- `static/app.js` -> `unicode_lower`
-- `static/lite.js` -> `unicode_lower`
+the UI uses a custom unicode glyph map for its visual identity — vowels render
+in **Mathematical Sans-Serif Bold** and consonants in **Mathematical Sans-Serif**.
+the map is defined in `static/app.js` and `static/lite.js` as `unicode_lower`,
+applied via `stylizeUi()`. see `docs/unicode-glyph-map.md` for the full table
+and rules for contributing text.
 
-## 𝖼𝐨𝗇𝗌𝗍𝐞𝗅𝗅𝐚𝗍𝐢𝐨𝗇 𝐚𝗍 𝐚 𝗀𝗅𝐚𝗇𝖼𝐞
-- 𝐞𝗇𝖼𝐨𝖽𝐞𝗋 𝐨𝗋𝖻𝐢𝗍𝗌: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
-- 𝖽𝐞𝖼𝐨𝖽𝐞𝗋 𝗌𝗐𝐞𝐞𝗉 𝐢𝗇𝖼𝗅𝐮𝖽𝐞𝗌 𝗋𝐚𝗇𝗄𝐞𝖽 `auto_detect`, 𝗆𝐞𝗍𝗁𝐨𝖽-𝗍𝐚𝗋𝗀𝐞𝗍𝐞𝖽 𝖽𝐞𝖼𝐨𝖽𝐞𝗋𝗌, 𝖻𝐢𝗍-𝗉𝗅𝐚𝗇𝐞 𝖼𝐚𝗋𝗏𝐢𝗇𝗀, 𝐢𝗇𝗍𝐞𝗋𝗇𝐚𝗅 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋𝗌, 𝐚𝗇𝖽 𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗌𝗍𝐞𝗀𝐨 𝗍𝐨𝐨𝗅𝗌.
-- 𝗉𝗋𝐨𝖿𝐢𝗅𝐞-𝖽𝗋𝐢𝗏𝐞𝗇 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝖽𝐞𝗉𝗍𝗁: `quick`, `balanced`, `deep`, `forensic`.
-- 𝖼𝐮𝗌𝗍𝐨𝗆 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 𝗌𝐞𝗅𝐞𝖼𝗍𝐢𝐨𝗇 𝗅𝐞𝗍𝗌 𝗒𝐨𝐮 𝖼𝗁𝐨𝐨𝗌𝐞 𝐞𝗑𝐚𝖼𝗍𝗅𝗒 𝗐𝗁𝐢𝖼𝗁 𝗌𝗍𝐚𝗋𝗌 𝗍𝐨 𝗌𝖼𝐚𝗇.
-- `veil-frame-lite` 𝐚𝗍 `/lite` 𝗄𝐞𝐞𝗉𝗌 𝐚 𝗌𝗆𝐚𝗅𝗅𝐞𝗋 𝗌𝗄𝗒: `simple_lsb` + `advanced_lsb` 𝐞𝗇𝖼𝐨𝖽𝐞, 𝗉𝗅𝐮𝗌 𝗅𝐢𝗍𝐞 𝖽𝐞𝖼𝐨𝖽𝐞 𝗍𝐨𝐨𝗅𝗌.
+## constellation at a glance
+- encoder orbits: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
+- decoder sweep includes ranked `auto_detect`, method-targeted decoders, bit-plane carving, internal analyzers, and external stego tools.
+- profile-driven analysis depth: `quick`, `balanced`, `deep`, `forensic`.
+- custom analyzer selection lets you choose exactly which stars to scan.
+- `veil-frame-lite` at `/lite` keeps a smaller sky: `simple_lsb` + `advanced_lsb` encode, plus lite decode tools.
 
-## 𝗅𝐚𝐮𝗇𝖼𝗁 𝗌𝐞𝗊𝐮𝐞𝗇𝖼𝐞 (𝖽𝐨𝖼𝗄𝐞𝗋 𝖼𝐨𝗆𝗉𝐨𝗌𝐞)
+## launch sequence (docker compose)
 ```bash
 cd veil-frame
 docker compose up --build
 ```
-𝗍𝗁𝐞𝗇 𝐨𝗉𝐞𝗇 `http://127.0.0.1:5050`.
+then open `http://127.0.0.1:5050`.
 
-𝗇𝐨𝗍𝐞𝗌:
-- 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝗉𝐨𝗋𝗍 `5000` 𝐢𝗌 𝗉𝐮𝖻𝗅𝐢𝗌𝗁𝐞𝖽 𝗍𝐨 𝗁𝐨𝗌𝗍 `5050`.
-- 𝗍𝗁𝐞 𝗋𝐞𝗉𝐨 𝐢𝗌 𝖻𝐢𝗇𝖽-𝗆𝐨𝐮𝗇𝗍𝐞𝖽 𝐢𝗇𝗍𝐨 `/workspace` 𝖿𝐨𝗋 𝖿𝐚𝗌𝗍 𝐢𝗍𝐞𝗋𝐚𝗍𝐢𝐨𝗇.
-- 𝖼𝐨𝗆𝗉𝐨𝗌𝐞 𝗋𝐮𝗇𝗍𝐢𝗆𝐞 𝗌𝐞𝗍𝗌 `FLASK_ENV=development` 𝐚𝗇𝖽 `FLASK_DEBUG=1`.
+notes:
+- container port `5000` is published to host `5050`.
+- the repo is bind-mounted into `/workspace` for fast iteration.
+- compose runtime sets `FLASK_ENV=development` and `FLASK_DEBUG=1`.
 
-## 𝖽𝐞𝗏𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝐨𝗋𝖻𝐢𝗍
-1. 𝐨𝗉𝐞𝗇 𝗍𝗁𝐞 𝖿𝐨𝗅𝖽𝐞𝗋 𝐢𝗇 𝗏𝗌 𝖼𝐨𝖽𝐞.
-2. 𝗋𝐮𝗇 "𝗋𝐞𝐨𝗉𝐞𝗇 𝐢𝗇 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋".
-3. 𝗍𝗁𝐞 𝖽𝐞𝗏𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋 𝐮𝗌𝐞𝗌 𝗍𝗁𝐞 𝗌𝐚𝗆𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝗌𝗍𝐚𝖼𝗄, 𝗐𝐢𝗍𝗁 𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝗉𝗋𝐞𝐢𝗇𝗌𝗍𝐚𝗅𝗅𝐞𝖽.
+## devcontainer orbit
+1. open the folder in vs code.
+2. run "reopen in container".
+3. the devcontainer uses the same docker stack, with tooling preinstalled.
 
-## 𝗅𝐨𝖼𝐚𝗅 𝗋𝐮𝗇 (𝗐𝐢𝗍𝗁𝐨𝐮𝗍 𝖽𝐨𝖼𝗄𝐞𝗋)
-𝐢𝗇𝗌𝗍𝐚𝗅𝗅 𝗉𝗒𝗍𝗁𝐨𝗇 3.11+ 𝐚𝗇𝖽 𝗍𝗁𝐞 𝐞𝗑𝗍𝐞𝗋𝗇𝐚𝗅 𝗍𝐨𝐨𝗅𝗌 𝗒𝐨𝐮 𝗇𝐞𝐞𝖽 (𝖿𝐨𝗋 𝐞𝗑𝐚𝗆𝗉𝗅𝐞: `binwalk`, `foremost`, `steghide`, `outguess`, `zsteg`, `exiftool`, `strings`, `7z`).
+## local run (without docker)
+install python 3.11+ and the external tools you need (for example: `binwalk`, `foremost`, `steghide`, `outguess`, `zsteg`, `exiftool`, `strings`, `7z`).
 
 ```bash
 cd veil-frame
@@ -40,62 +42,178 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 flask --app app run --debug
 ```
-𝗍𝗁𝐞𝗇 𝐨𝗉𝐞𝗇 `http://127.0.0.1:5000`.
+then open `http://127.0.0.1:5000`.
 
-## 𝗉𝗋𝐨𝖽𝐮𝖼𝗍𝐢𝐨𝗇 𝖻𝐮𝗋𝗇 (𝗀𝐮𝗇𝐢𝖼𝐨𝗋𝗇)
+## production burn (gunicorn)
 ```bash
 pip install -r requirements.txt
 gunicorn wsgi:app --bind 0.0.0.0:8000
 ```
 
-𝖿𝐨𝗋 𝗁𝐨𝗌𝗍𝐞𝖽 𝗉𝗅𝐚𝗍𝖿𝐨𝗋𝗆𝗌, 𝖻𝐢𝗇𝖽 𝗍𝐨 `$PORT`:
+for hosted platforms, bind to `$PORT`:
 ```bash
 gunicorn wsgi:app --bind 0.0.0.0:$PORT
 ```
 
-𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗆𝐚𝗀𝐞 𝐢𝗍𝗌𝐞𝗅𝖿 𝗌𝗍𝐚𝗋𝗍𝗌 𝗐𝐢𝗍𝗁:
+the docker image itself starts with:
 ```bash
 gunicorn --bind 0.0.0.0:${PORT:-10000} app:app
 ```
 
-## 𝗋𝐞𝗇𝖽𝐞𝗋 𝖽𝐞𝗉𝗅𝐨𝗒𝗆𝐞𝗇𝗍 𝗌𝗍𝐚𝗋𝗌
-### 𝖽𝐨𝖼𝗄𝐞𝗋 𝗌𝐞𝗋𝗏𝐢𝖼𝐞
-- 𝖼𝗋𝐞𝐚𝗍𝐞 𝐚 𝗇𝐞𝗐 𝗋𝐞𝗇𝖽𝐞𝗋 𝗐𝐞𝖻 𝗌𝐞𝗋𝗏𝐢𝖼𝐞 𝗐𝐢𝗍𝗁 𝐞𝗇𝗏𝐢𝗋𝐨𝗇𝗆𝐞𝗇𝗍 𝗌𝐞𝗍 𝗍𝐨 𝖽𝐨𝖼𝗄𝐞𝗋.
-- 𝗉𝐨𝐢𝗇𝗍 𝐢𝗍 𝗍𝐨 𝗍𝗁𝐢𝗌 𝗋𝐞𝗉𝐨𝗌𝐢𝗍𝐨𝗋𝗒.
-- 𝗋𝐞𝗇𝖽𝐞𝗋 𝖻𝐮𝐢𝗅𝖽𝗌 𝖿𝗋𝐨𝗆 `Dockerfile` 𝐚𝗇𝖽 𝗌𝗍𝐚𝗋𝗍𝗌 𝐨𝗇 `0.0.0.0:$PORT`.
+---
 
-### 𝖻𝗅𝐮𝐞𝗉𝗋𝐢𝗇𝗍 (`render.yaml`)
-- 𝖼𝗋𝐞𝐚𝗍𝐞 𝐚 𝗋𝐞𝗇𝖽𝐞𝗋 𝖻𝗅𝐮𝐞𝗉𝗋𝐢𝗇𝗍.
-- 𝗋𝐞𝗇𝖽𝐞𝗋 𝗋𝐞𝐚𝖽𝗌 `render.yaml` 𝐚𝗇𝖽 𝗉𝗋𝐨𝗏𝐢𝗌𝐢𝐨𝗇𝗌 𝗍𝗁𝐞 𝖽𝐨𝖼𝗄𝐞𝗋 𝗐𝐞𝖻 𝗌𝐞𝗋𝗏𝐢𝖼𝐞.
+## analysis profiles
 
-## 𝗌𝗆𝐨𝗄𝐞 𝗏𝐞𝗋𝐢𝖿𝐢𝖼𝐚𝗍𝐢𝐨𝗇
-𝐢𝗇𝗌𝐢𝖽𝐞 𝗍𝗁𝐞 𝗋𝐮𝗇𝗇𝐢𝗇𝗀 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐞𝗋:
-```bash
-docker compose exec web bash -lc "which binwalk; which foremost; which steghide; which outguess; which zsteg; which exiftool; which strings; which 7z; which file; which unzip; which unsquashfs"
-docker compose exec web make smoke
-```
+the decoder uses four profiles that control which tools run and how deep the analysis goes. the UI auto-selects analyzers and advanced options based on the chosen profile.
 
-𝐢𝖿 𝗒𝐨𝐮 𝐚𝗋𝐞 𝐨𝗇 𝐚 𝗋𝐞𝗌𝗍𝗋𝐢𝖼𝗍𝐞𝖽 𝗋𝐮𝗇𝗇𝐞𝗋 𝗐𝐢𝗍𝗁𝐨𝐮𝗍 𝗍𝗁𝐞 𝖿𝐮𝗅𝗅 𝗍𝐨𝐨𝗅𝖼𝗁𝐚𝐢𝗇:
-```bash
-ALLOW_MISSING_TOOLS=1 make smoke
-```
+### quick (eta: 15s - 1m 30s)
+fast, python-only signal checks. no external tools.
 
-## 𝐚𝗉𝐢 𝗌𝗍𝐚𝗋 𝖼𝗁𝐚𝗋𝗍
+**internal analyzers (10):**
 
-### `post /api/encode`
-𝖿𝐨𝗋𝗆-𝖽𝐚𝗍𝐚 𝖿𝐢𝐞𝗅𝖽𝗌:
-- `image` (𝗋𝐞𝗊𝐮𝐢𝗋𝐞𝖽 𝖿𝐢𝗅𝐞, 𝗉𝗇𝗀 𝐨𝗋 𝗃𝗉𝐞𝗀, 𝗆𝐚𝗑 8 𝗆𝖻).
-- `encodeMethod` 𝐨𝗇𝐞 𝐨𝖿: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
-- `payloadMode`: `text` 𝐨𝗋 `file`.
-- `text` 𝗉𝐚𝗒𝗅𝐨𝐚𝖽 (𝗐𝗁𝐞𝗇 𝐮𝗌𝐢𝗇𝗀 𝗍𝐞𝗑𝗍 𝗆𝐨𝖽𝐞).
-- `payload` 𝖿𝐢𝗅𝐞 𝗉𝐚𝗒𝗅𝐨𝐚𝖽 (𝗐𝗁𝐞𝗇 𝐮𝗌𝐢𝗇𝗀 𝖿𝐢𝗅𝐞 𝗆𝐨𝖽𝐞).
-- `outputFormat`: `png` 𝐨𝗋 `jpeg`.
+| analyzer | description |
+|----------|-------------|
+| `smart_scan` | quick entropy + format triage to prioritize likely payload paths |
+| `advanced_lsb` | per-channel text/zlib detector for multi-plane payloads |
+| `simple_lsb` | common lsb text extraction across rgb/rgba planes |
+| `simple_zlib` | zlib stream recovery from typical lsb bitstreams |
+| `simple_rgb` | rgb plane text extraction |
+| `red_plane` | red channel isolated extraction |
+| `green_plane` | green channel isolated extraction |
+| `blue_plane` | blue channel isolated extraction |
+| `alpha_plane` | alpha channel isolated extraction |
+| `decode_options` | method-targeted decoders (lsb, pvd, dct, f5, etc.) |
 
-𝗌𝐢𝗆𝗉𝗅𝐞/𝐚𝖽𝗏𝐚𝗇𝖼𝐞𝖽 𝖼𝐨𝗇𝗍𝗋𝐨𝗅𝗌:
-- `simple_lsb`: `mode` (`text` 𝐨𝗋 `zlib`), `plane` (`RGB`, `R`, `G`, `B`, `A`, `RGBA`).
-- `advanced_lsb`: `channels` 𝗃𝗌𝐨𝗇 𝐨𝖻𝗃𝐞𝖼𝗍 𝐚𝗇𝖽 𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅 𝐮𝗉𝗅𝐨𝐚𝖽𝐞𝖽 𝖿𝐢𝗅𝐞𝗌 `file_R`, `file_G`, `file_B`, `file_A`.
+### balanced (eta: 1m - 4m)
+everyday workshop profile. broad coverage without deep brute-force passes.
 
-𝗆𝐞𝗍𝗁𝐨𝖽 𝐨𝗉𝗍𝐢𝐨𝗇 𝖿𝐢𝐞𝗅𝖽𝗌:
+**internal analyzers (18):** all quick analyzers plus:
+
+| analyzer | description |
+|----------|-------------|
+| `stegg` | legacy stegg-compatible decode probe |
+| `zero_width` | zero-width unicode hidden text extraction |
+| `entropy_analyzer` | channel entropy anomalies and lsb randomness checks |
+| `jpeg_qtable_analyzer` | jpeg quantization table forensic hints |
+| `statistical_steg` | statistical detection heuristics for embedded data |
+| `payload_unwrap` | unwrap base64/base91/xor/rot payload wrappers |
+| `xor_flag_sweep` | keyword-guided xor sweep for ctf-style payloads |
+| `randomizer_decode` | shuffle/xor candidate decodes for obfuscated plaintext |
+| `decomposer` | render per-plane images for visual payload inspection |
+
+**external tools (19):**
+
+| tool | what it does |
+|------|-------------|
+| `binwalk` | signature scan for embedded file segments |
+| `foremost` | header/footer carving for hidden file recovery |
+| `exiftool` | metadata and profile anomaly extraction |
+| `strings` | readable byte sequences from carrier file |
+| `steghide` | steghide extraction using provided password |
+| `zsteg` | png/bmp lsb brute and signature extraction |
+| `stegpy` | python stego tool probe |
+| `stegolsb` | stego-lsb extraction tool |
+| `lsbsteg` | LSB-Steganography tool |
+| `stegano_lsb` | stegano lsb extraction |
+| `stegano_lsb_set` | stegano lsb-set extraction |
+| `stegano_red` | stegano red channel extraction |
+| `cloackedpixel` | cloacked-pixel stego tool |
+| `cloackedpixel_analyse` | cloacked-pixel analysis mode |
+| `stegsnow` | whitespace steganography (snow) |
+| `stegify` | go-based image stego tool |
+| `openstego` | java-based stego suite |
+| `file` | file type detection |
+| `7z` | archive extraction |
+
+### deep (eta: 3m - 12m)
+adds deep-frequency and plane-carving passes for stronger recovery odds.
+
+**internal analyzers (20):** all balanced analyzers plus:
+
+| analyzer | description |
+|----------|-------------|
+| `plane_carver` | file signature carving over many bitstream traversals |
+| `outguess` | outguess extraction pass with password |
+
+**external tools (35):** all balanced tools plus:
+
+| tool | what it does |
+|------|-------------|
+| `outguess` | outguess stego extraction with password |
+| `stegbreak` | jpeg stego password cracking |
+| `stegseek` | steghide seed/password cracking |
+| `stegcracker` | steghide password brute-force |
+| `fcrackzip` | zip password cracking |
+| `stegoveritas` | comprehensive stego analysis suite |
+| `bulk_extractor` | bulk data extraction and carving |
+| `scalpel` | file carving engine |
+| `hideme` | audio/image hiding tool |
+| `mp3stego_encode` | mp3 steganography encoder probe |
+| `mp3stego_decode` | mp3 steganography decoder probe |
+| `jphide` | jpeg hiding tool |
+| `jphs` | jpeg seek probe |
+| `jpseek` | jpeg stego extraction |
+| `stegexpose` | statistical steganalysis |
+
+**auto-enabled options:** spread spectrum decoding, binwalk extraction.
+
+### forensic (eta: 8m - 30m)
+maximum depth with manual/interactive tool hooks enabled.
+
+**internal analyzers (20):** same as deep.
+
+**external tools (45):** all deep tools plus:
+
+| tool | what it does |
+|------|-------------|
+| `openpuff` | gui multi-carrier stego (presence probe) |
+| `deepsound` | audio stego gui tool (presence probe) |
+| `stegosuite` | java gui stego suite (presence probe) |
+| `testdisk` | interactive disk/partition recovery |
+| `photorec` | interactive file recovery |
+| `wireshark` | network packet analysis |
+| `bvi` | binary/hex editor |
+| `stegsolve` | visual stego analysis (bit planes, transforms) |
+| `qrencode` | qr code generation |
+| `sonic_visualiser` | audio spectrum forensics (presence probe) |
+
+**auto-enabled options:** spread spectrum decoding, binwalk extraction, invisible unicode sweep (all tiers, high aggressiveness).
+
+---
+
+## additional tooling in the docker image
+
+the docker image also installs these utilities used by the analyzer pipeline:
+
+| category | tools |
+|----------|-------|
+| **image metadata** | `identify`, `convert`, `jpeginfo`, `jpegsnoop`, `jhead`, `exiv2`, `exifprobe`, `pngcheck`, `pngtools`, `mediainfo` |
+| **image format** | `jpegtran`, `cjpeg`, `djpeg`, `optipng`, `pngcrush`, `jpegdump`, `jpegrescan`, `pngfix`, `gifextract`, `webpinfo`, `webpmux` |
+| **detection** | `stegdetect`, `jsteg`, `zbarimg`, `tesseract` |
+| **media/audio** | `ffmpeg`, `ffprobe`, `sox` |
+| **pdf** | `pdfinfo`, `pdftotext`, `pdfimages`, `qpdf` |
+| **binary analysis** | `radare2`, `rizin`, `hexyl`, `xxd`, `rg` |
+| **network/disk** | `tshark`, `sleuthkit` (`mmls`), `volatility` |
+| **archives** | `tar`, `gzip`, `bzip2`, `unzip`, `unsquashfs`, `xz` |
+
+---
+
+## api star chart
+
+### `POST /api/encode`
+form-data fields:
+- `image` (required file, png or jpeg, max 8 mb).
+- `encodeMethod` one of: `simple_lsb`, `advanced_lsb`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`.
+- `payloadMode`: `text` or `file`.
+- `text` payload (when using text mode).
+- `payload` file payload (when using file mode).
+- `outputFormat`: `png` or `jpeg`.
+
+simple/advanced controls:
+- `simple_lsb`: `mode` (`text` or `zlib`), `plane` (`RGB`, `R`, `G`, `B`, `A`, `RGBA`).
+- `advanced_lsb`: `channels` json object and optional uploaded files `file_R`, `file_G`, `file_B`, `file_A`.
+
+method option fields:
 - `lsbChannels`, `lsbBits`
 - `pvdDirection`, `pvdRange`
 - `dctRobustness`, `dctBlockSize`
@@ -105,54 +223,76 @@ ALLOW_MISSING_TOOLS=1 make smoke
 - `chromaSpace`, `chromaChannel`, `chromaIntensity`, `chromaPattern`
 - `pngChunkType`, `pngChunkKeyword`
 
-𝗋𝐞𝗌𝗉𝐨𝗇𝗌𝐞: 𝗃𝗌𝐨𝗇 𝖼𝐨𝗇𝗍𝐚𝐢𝗇𝐢𝗇𝗀 `filename` 𝐚𝗇𝖽 `data_url`.
+response: json containing `filename` and `data_url`.
 
-### `post /api/decode`
-𝖿𝐨𝗋𝗆-𝖽𝐚𝗍𝐚 𝖿𝐢𝐞𝗅𝖽𝗌:
-- `image` (𝗋𝐞𝗊𝐮𝐢𝗋𝐞𝖽 𝖿𝐢𝗅𝐞, 𝗆𝐚𝗑 8 𝗆𝖻)
-- `password` (𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅)
-- `deep` (`true`/`false`)
-- `manual` (`true`/`false`)
+### `POST /api/decode`
+form-data fields:
+- `image` (required file, max 8 mb)
+- `password` (optional)
+- `analysisProfile` (`quick`, `balanced`, `deep`, `forensic`)
+- `selectedTools` (json array of analyzer ids)
+- `spreadSpectrum` (`true`/`false`)
 - `binwalkExtract` (`true`/`false`)
 - `unicodeSweep` (`true`/`false`)
 - `unicodeTier1` (`true`/`false`)
 - `unicodeSeparators` (`true`/`false`)
 - `unicodeAggressiveness` (`low`, `balanced`, `high`)
 - `decodeOption` (`auto_detect`, `lsb`, `pvd`, `dct`, `f5`, `spread_spectrum`, `palette`, `chroma`, `png_chunks`)
-- `spreadSpectrum` (`true`/`false`)
-- `analysisProfile` (`quick`, `balanced`, `deep`, `forensic`)
-- `selectedTools` (𝗃𝗌𝐨𝗇 𝐚𝗋𝗋𝐚𝗒 𝐨𝖿 𝐚𝗇𝐚𝗅𝗒𝗓𝐞𝗋 𝐢𝖽𝗌)
+- `deep` (`true`/`false`) — legacy override, profile controls this
+- `manual` (`true`/`false`) — legacy override, profile controls this
 
-𝗋𝐞𝗌𝗉𝐨𝗇𝗌𝐞: 𝐚𝗇𝐚𝗅𝗒𝗌𝐢𝗌 𝗃𝗌𝐨𝗇 𝗐𝐢𝗍𝗁 `results`, 𝐨𝗉𝗍𝐢𝐨𝗇𝐚𝗅 `artifacts`, 𝐚𝗇𝖽 `meta`.
+response: analysis json with `results`, optional `artifacts`, and `meta`.
 
-### 𝗉𝗋𝐨𝖿𝐢𝗅𝐞 𝐚𝗇𝖽 𝗍𝐨𝐨𝗅𝐢𝗇𝗀 𝐞𝗇𝖽𝗉𝐨𝐢𝗇𝗍𝗌
-- `get /api/tools`
-- `get /api/profiles`
-- `get /api/analyzers?profile=<id>`
+### profile and tooling endpoints
+- `GET /api/tools`
+- `GET /api/profiles`
+- `GET /api/analyzers?profile=<id>`
 
-### 𝗅𝐢𝗍𝐞 𝐞𝗇𝖽𝗉𝐨𝐢𝗇𝗍𝗌
-- `get /lite`
-- `get /api/lite/tools`
-- `post /api/lite/encode` (𝗌𝐮𝗉𝗉𝐨𝗋𝗍𝗌 `simple_lsb` 𝐚𝗇𝖽 `advanced_lsb` 𝐨𝗇𝗅𝗒)
-- `post /api/lite/decode`
+### lite endpoints
+- `GET /lite`
+- `GET /api/lite/tools`
+- `POST /api/lite/encode` (supports `simple_lsb` and `advanced_lsb` only)
+- `POST /api/lite/decode`
 
-𝗅𝐢𝗍𝐞 𝐞𝗇𝖼𝐨𝖽𝐞 𝗇𝐨𝗍𝐞𝗌:
-- `advanced_lsb` 𝐢𝗇 𝗅𝐢𝗍𝐞 𝐨𝐮𝗍𝗉𝐮𝗍𝗌 𝗉𝗇𝗀 𝐨𝗇𝗅𝗒.
-- 𝗌𝐚𝗆𝐞 8 𝗆𝖻 𝐮𝗉𝗅𝐨𝐚𝖽 𝗅𝐢𝗆𝐢𝗍 𝐚𝗉𝗉𝗅𝐢𝐞𝗌.
+lite encode notes:
+- `advanced_lsb` in lite outputs png only.
+- same 8 mb upload limit applies.
 
-## 𝗍𝗋𝐨𝐮𝖻𝗅𝐞𝗌𝗁𝐨𝐨𝗍𝐢𝗇𝗀 𝐮𝗇𝖽𝐞𝗋 𝖼𝗅𝐨𝐮𝖽 𝖼𝐨𝗏𝐞𝗋
-- 𝐢𝖿 𝗍𝗁𝐞 𝗉𝐨𝗋𝗍 𝐢𝗌 𝖻𝐮𝗌𝗒, 𝖼𝗁𝐚𝗇𝗀𝐞 𝗁𝐨𝗌𝗍 𝗆𝐚𝗉𝗉𝐢𝗇𝗀 𝐢𝗇 `docker-compose.yml`.
-- 𝐢𝖿 𝖽𝐨𝖼𝗄𝐞𝗋 𝐢𝗌 𝗇𝐨𝗍 𝗋𝐮𝗇𝗇𝐢𝗇𝗀, 𝗌𝗍𝐚𝗋𝗍 𝖽𝐨𝖼𝗄𝐞𝗋 𝖽𝐞𝗌𝗄𝗍𝐨𝗉/𝖽𝐚𝐞𝗆𝐨𝗇 𝖿𝐢𝗋𝗌𝗍.
-- 𝐢𝖿 𝐚 𝗍𝐨𝐨𝗅 𝐢𝗌 𝗆𝐢𝗌𝗌𝐢𝗇𝗀, 𝗍𝗁𝐞 𝐮𝐢 𝗆𝐚𝗋𝗄𝗌 𝐢𝗍 𝗆𝐢𝗌𝗌𝐢𝗇𝗀 𝐚𝗇𝖽 𝖼𝐨𝗇𝗍𝐢𝗇𝐮𝐞𝗌 𝗐𝗁𝐞𝗋𝐞 𝗉𝐨𝗌𝗌𝐢𝖻𝗅𝐞.
-- 𝖿𝐢𝗋𝗌𝗍 𝖽𝐨𝖼𝗄𝐞𝗋 𝖻𝐮𝐢𝗅𝖽 𝐢𝗌 𝗁𝐞𝐚𝗏𝗒 𝖻𝐞𝖼𝐚𝐮𝗌𝐞 𝗍𝗁𝐞 𝐢𝗆𝐚𝗀𝐞 𝐢𝗇𝗌𝗍𝐚𝗅𝗅𝗌 𝖻𝗋𝐨𝐚𝖽 𝗌𝗍𝐞𝗀𝐨 𝗍𝐨𝐨𝗅𝐢𝗇𝗀.
+## render deployment stars
+### docker service
+- create a new render web service with environment set to docker.
+- point it to this repository.
+- render builds from `Dockerfile` and starts on `0.0.0.0:$PORT`.
 
-## 𝗌𝐞𝖼𝐮𝗋𝐢𝗍𝗒 𝗁𝐨𝗋𝐢𝗓𝐨𝗇
-𝖽𝐨 𝗇𝐨𝗍 𝐞𝗑𝗉𝐨𝗌𝐞 𝗍𝗁𝐞 𝖿𝗅𝐚𝗌𝗄 𝖽𝐞𝖻𝐮𝗀𝗀𝐞𝗋 𝐨𝗇 𝐮𝗇𝗍𝗋𝐮𝗌𝗍𝐞𝖽 𝗇𝐞𝗍𝗐𝐨𝗋𝗄𝗌.
-𝖿𝐨𝗋 𝗉𝗋𝐨𝖽𝐮𝖼𝗍𝐢𝐨𝗇, 𝗋𝐮𝗇 𝖻𝐞𝗁𝐢𝗇𝖽 𝐚 𝗉𝗋𝐨𝗉𝐞𝗋 𝗋𝐞𝗏𝐞𝗋𝗌𝐞 𝗉𝗋𝐨𝗑𝗒 𝐚𝗇𝖽 𝗄𝐞𝐞𝗉 𝖽𝐞𝖻𝐮𝗀 𝗆𝐨𝖽𝐞 𝐨𝖿𝖿.
+### blueprint (`render.yaml`)
+- create a render blueprint.
+- render reads `render.yaml` and provisions the docker web service.
 
-## 𝗍𝗐𝐢𝗍𝗍𝐞𝗋 𝗇𝐨𝗍𝐞 (𝗅𝗌𝖻 𝐨𝗋𝖻𝐢𝗍 𝗌𝗍𝐚𝖻𝐢𝗅𝐢𝗍𝗒)
-𝗍𝗁𝐞 𝗍𝗐𝐢𝗍𝗍𝐞𝗋-𝗌𝐚𝖿𝐞 𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐢𝐨𝗇 𝗀𝐮𝐚𝗋𝖽𝗋𝐚𝐢𝗅 𝐢𝗌 𝖽𝐨𝖼𝐮𝗆𝐞𝗇𝗍𝐞𝖽 𝐢𝗇 `docs/twitter-encoding.md`.
-𝗌𝗁𝐨𝗋𝗍 𝗏𝐞𝗋𝗌𝐢𝐨𝗇: 𝗍𝗁𝐞 𝐚𝗉𝗉 𝗉𝗋𝐞-𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐞𝗌 𝐚𝗇𝖽, 𝗐𝗁𝐞𝗇 𝗇𝐞𝐞𝖽𝐞𝖽, 𝖽𝐨𝗐𝗇𝗌𝖼𝐚𝗅𝐞𝗌 𝗌𝐨 𝗉𝗇𝗀 𝐨𝐮𝗍𝗉𝐮𝗍 𝗌𝗍𝐚𝗒𝗌 𝗇𝐞𝐚𝗋 𝗍𝗐𝐢𝗍𝗍𝐞𝗋'𝗌 𝗋𝐞𝖼𝐨𝗆𝗉𝗋𝐞𝗌𝗌𝐢𝐨𝗇 𝗍𝗁𝗋𝐞𝗌𝗁𝐨𝗅𝖽.
+## smoke verification
+inside the running container:
+```bash
+docker compose exec web bash -lc "which binwalk; which foremost; which steghide; which outguess; which zsteg; which exiftool; which strings; which 7z; which file; which unzip; which unsquashfs"
+docker compose exec web make smoke
+```
 
-## 𝗅𝐢𝖼𝐞𝗇𝗌𝐞
-𝗍𝗁𝐢𝗌 𝗋𝐞𝗉𝐨𝗌𝐢𝗍𝐨𝗋𝗒 𝐢𝗌 𝗋𝐞𝗅𝐞𝐚𝗌𝐞𝖽 𝐮𝗇𝖽𝐞𝗋 𝗍𝗁𝐞 𝗆𝐢𝗍 𝗅𝐢𝖼𝐞𝗇𝗌𝐞 (`LICENSE`).
+if you are on a restricted runner without the full toolchain:
+```bash
+ALLOW_MISSING_TOOLS=1 make smoke
+```
+
+## troubleshooting under cloud cover
+- if the port is busy, change host mapping in `docker-compose.yml`.
+- if docker is not running, start docker desktop/daemon first.
+- if a tool is missing, the ui marks it missing and continues where possible.
+- first docker build is heavy because the image installs broad stego tooling.
+
+## security horizon
+do not expose the flask debugger on untrusted networks.
+for production, run behind a proper reverse proxy and keep debug mode off.
+
+## twitter note (lsb orbit stability)
+the twitter-safe compression guardrail is documented in `docs/twitter-encoding.md`.
+short version: the app pre-compresses and, when needed, downscales so png output stays near twitter's recompression threshold.
+
+## license
+this repository is released under the mit license (`LICENSE`).

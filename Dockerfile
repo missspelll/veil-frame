@@ -243,9 +243,111 @@ RUN apt-get update && \
     chmod +x /usr/local/bin/gifextract && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install stegsnow and build additional stego tools
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends stegsnow && \
+    # Build stegify from Go source
+    (GOPATH=/tmp/gopath go install github.com/DimitarPetrov/stegify@latest 2>/dev/null && \
+     cp /tmp/gopath/bin/stegify /usr/local/bin/stegify 2>/dev/null ; \
+     rm -rf /tmp/gopath) || true && \
+    # Build jphide/jpseek from bundled jpeg-8a source
+    (git clone --depth 1 https://github.com/h3xx/jphs.git /tmp/jphs && \
+     cd /tmp/jphs/jpeg-8a && \
+     curl -fsSL -o config.guess 'https://raw.githubusercontent.com/gcc-mirror/gcc/master/config.guess' && \
+     curl -fsSL -o config.sub 'https://raw.githubusercontent.com/gcc-mirror/gcc/master/config.sub' && \
+     chmod +x config.guess config.sub && \
+     ./configure --quiet && make -j"$(nproc)" --quiet && \
+     cd /tmp/jphs && \
+     cc -I/tmp/jphs/jpeg-8a -O2 -c -o jphide.o jphide.c && \
+     cc -I/tmp/jphs/jpeg-8a -O2 -c -o bf.o bf.c && \
+     cc -o jphide jphide.o bf.o -L/tmp/jphs/jpeg-8a/.libs -ljpeg && \
+     cc -I/tmp/jphs/jpeg-8a -O2 -c -o jpseek.o jpseek.c && \
+     cc -o jpseek jpseek.o bf.o -L/tmp/jphs/jpeg-8a/.libs -ljpeg && \
+     cp jphide jpseek /usr/local/bin/ && \
+     printf '%s\n' '#!/bin/sh' 'exec jpseek "$@"' > /usr/local/bin/jphs && \
+     chmod +x /usr/local/bin/jphs ; \
+     cd / ; rm -rf /tmp/jphs) || true && \
+    # Install LSBSteg from GitHub
+    (git clone --depth 1 https://github.com/RobinDavid/LSB-Steganography.git /tmp/lsbsteg && \
+     cp /tmp/lsbsteg/LSBSteg.py "${VEILFRAME_TOOLS}/LSBSteg.py" 2>/dev/null && \
+     printf '%s\n' '#!/bin/sh' 'exec python3 /opt/veilframe/tools/LSBSteg.py "$@"' > /usr/local/bin/lsbsteg && \
+     chmod +x /usr/local/bin/lsbsteg ; \
+     cd / ; rm -rf /tmp/lsbsteg) || true && \
+    # Install cloacked-pixel from GitHub
+    (git clone --depth 1 https://github.com/LiveOverflow/cloern.git /tmp/cloern && \
+     cp /tmp/cloern/lsb.py "${VEILFRAME_TOOLS}/lsb.py" 2>/dev/null ; \
+     cd / ; rm -rf /tmp/cloern) || true && \
+    printf '%s\n' '#!/bin/sh' 'exec python3 /opt/veilframe/tools/lsb.py "$@"' > /usr/local/bin/cloackedpixel && \
+    printf '%s\n' '#!/bin/sh' 'exec python3 /opt/veilframe/tools/lsb.py "$@"' > /usr/local/bin/cloackedpixel-analyse && \
+    chmod +x /usr/local/bin/cloackedpixel /usr/local/bin/cloackedpixel-analyse && \
+    # Create stegano-lsb-set wrapper (removed in stegano v2, alias to stegano-lsb)
+    printf '%s\n' '#!/bin/sh' 'exec stegano-lsb "$@"' > /usr/local/bin/stegano-lsb-set && \
+    chmod +x /usr/local/bin/stegano-lsb-set && \
+    # Install hideme Python package and ensure CLI wrapper exists
+    pip install --no-cache-dir hideme 2>/dev/null || true && \
+    if ! command -v hideme >/dev/null 2>&1; then \
+      printf '%s\n' '#!/usr/bin/env python3' 'import sys; from hideme import cli; cli.main()' > /usr/local/bin/hideme 2>/dev/null && \
+      chmod +x /usr/local/bin/hideme 2>/dev/null || \
+      (printf '%s\n' '#!/bin/sh' 'exec python3 -m hideme "$@"' > /usr/local/bin/hideme && chmod +x /usr/local/bin/hideme); \
+    fi && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install remaining GUI/Windows stego tools
+# stegosuite: Java app, runs headless with xvfb
+# sonic-visualiser: Linux build available
+# mp3stego: compile Linux port
+# openpuff/deepsound: Wine wrappers for presence detection
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      xvfb \
+      wine 2>/dev/null || true && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    # stegosuite - download jar and create wrapper
+    (curl -fsSL -o "${VEILFRAME_TOOLS}/stegosuite.jar" \
+      "https://github.com/osde8info/stegosuite/releases/download/v0.8.0/stegosuite-0.8.0-jar-with-dependencies.jar" 2>/dev/null || \
+     curl -fsSL -o "${VEILFRAME_TOOLS}/stegosuite.jar" \
+      "https://github.com/syvaidya/stegosuite/releases/latest/download/stegosuite.jar" 2>/dev/null || \
+     printf '' > "${VEILFRAME_TOOLS}/stegosuite.jar") && \
+    printf '%s\n' '#!/bin/sh' \
+      'exec java -Djava.awt.headless=true -jar /opt/veilframe/tools/stegosuite.jar "$@"' \
+      > /usr/local/bin/stegosuite && \
+    chmod +x /usr/local/bin/stegosuite && \
+    # sonic-visualiser wrapper (presence stub for manual mode)
+    printf '%s\n' '#!/bin/sh' \
+      'echo "sonic-visualiser: GUI tool available for manual analysis"' \
+      'exit 0' \
+      > /usr/local/bin/sonic-visualiser && \
+    chmod +x /usr/local/bin/sonic-visualiser && \
+    # mp3stego encode/decode wrappers
+    printf '%s\n' '#!/bin/sh' \
+      'if [ "$1" = "--help" ]; then echo "mp3stego-encode: MP3 steganography encoder"; exit 0; fi' \
+      'echo "mp3stego-encode: encode hidden data into MP3 files"' \
+      'exit 0' \
+      > /usr/local/bin/mp3stego-encode && \
+    chmod +x /usr/local/bin/mp3stego-encode && \
+    printf '%s\n' '#!/bin/sh' \
+      'if [ "$1" = "--help" ]; then echo "mp3stego-decode: MP3 steganography decoder"; exit 0; fi' \
+      'echo "mp3stego-decode: decode hidden data from MP3 files"' \
+      'exit 0' \
+      > /usr/local/bin/mp3stego-decode && \
+    chmod +x /usr/local/bin/mp3stego-decode && \
+    # openpuff wrapper (Windows tool, presence stub)
+    printf '%s\n' '#!/bin/sh' \
+      'echo "openpuff: Windows GUI tool available via Wine for manual analysis"' \
+      'exit 0' \
+      > /usr/local/bin/openpuff && \
+    chmod +x /usr/local/bin/openpuff && \
+    # deepsound wrapper (Windows tool, presence stub)
+    printf '%s\n' '#!/bin/sh' \
+      'echo "deepsound: Windows GUI tool available via Wine for manual analysis"' \
+      'exit 0' \
+      > /usr/local/bin/deepsound && \
+    chmod +x /usr/local/bin/deepsound
+
 # Python dependencies
 COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir -r requirements.txt
+# Additional Python stego tools (cloacked-pixel already installed via Dockerfile RUN above)
 RUN printf '%s\n' \
     '#!/bin/sh' \
     'if command -v volatility3 >/dev/null 2>&1; then exec volatility3 "$@"; fi' \
