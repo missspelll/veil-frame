@@ -9,3 +9,6 @@ pytest>=7.4
 stegpy>=0.0.1
 stego-lsb>=1.4
 stegano>=0.11
+jpeglib>=1.0
+soundfile>=0.12
+scipy>=1.11

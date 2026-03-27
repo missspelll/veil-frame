@@ -29,6 +29,36 @@ BASE64_LIKE_RE = re.compile(r"\b(?:[A-Za-z0-9+/]{24,}={0,2})\b")
 HEX_LIKE_RE = re.compile(r"\b(?:0x)?[0-9a-fA-F]{16,}\b")
 
 _DCT_CACHE: Dict[Tuple[str, int, int], np.ndarray] = {}
+_NATIVE_DCT_CACHE: Dict[Tuple[str, int, int], np.ndarray] = {}
+
+
+def _get_native_jpeg_coeffs(input_img: Path) -> Optional[np.ndarray]:
+    """Read quantized DCT coefficients directly from JPEG file via jpeglib.
+
+    Returns shape (N, 8, 8) for N blocks of 8x8 Y-channel coefficients,
+    or None if jpeglib is unavailable or the file is not a valid JPEG.
+    """
+    stat = input_img.stat()
+    key = (str(input_img.resolve()), stat.st_mtime_ns, stat.st_size)
+    cached = _NATIVE_DCT_CACHE.get(key)
+    if cached is not None:
+        return cached
+
+    try:
+        import jpeglib
+    except ImportError:
+        return None
+
+    try:
+        jpeg = jpeglib.read_dct(str(input_img))
+        y_coeffs = jpeg.Y  # shape: (blocks_v, blocks_h, 8, 8)
+        # Flatten to (N, 8, 8)
+        bv, bh = y_coeffs.shape[:2]
+        coeffs = y_coeffs.reshape(bv * bh, 8, 8).astype(np.float32)
+        _NATIVE_DCT_CACHE[key] = coeffs
+        return coeffs
+    except Exception:
+        return None
 
 
 def _now_ms() -> float:
@@ -533,10 +563,17 @@ def analyze_dct(
             started_ms=started,
         )
 
+    # Prefer native JPEG DCT coefficients (exact quantized values from the file)
+    # over recomputed spatial-domain DCT (lossy approximation).
+    native_coeffs = _get_native_jpeg_coeffs(input_img)
+
     candidates: List[Dict[str, Any]] = []
     for block_size in (8, 16):
         try:
-            coeffs = _get_dct_coeffs(input_img, block_size=block_size)
+            if native_coeffs is not None and block_size == 8:
+                coeffs = native_coeffs
+            else:
+                coeffs = _get_dct_coeffs(input_img, block_size=block_size)
         except Exception as exc:
             return _result(
                 option_id,
@@ -680,7 +717,8 @@ def analyze_f5(
         )
 
     try:
-        coeffs = _get_dct_coeffs(input_img)
+        native = _get_native_jpeg_coeffs(input_img)
+        coeffs = native if native is not None else _get_dct_coeffs(input_img)
     except Exception as exc:
         return _result(
             option_id,

@@ -24,6 +24,16 @@ from .xor_flag_sweep import analyze_xor_flag_sweep
 from .zero_width import analyze_zero_width
 from .zsteg import analyze_zsteg
 
+# ste.gg parity decoders
+from .homoglyph import analyze_homoglyph
+from .whitespace_steg import analyze_whitespace_steg
+from .audio_lsb import analyze_audio_lsb
+from .audio_fft import analyze_audio_fft
+from .audio_echo import analyze_audio_echo
+from .audio_spectrogram import analyze_audio_spectrogram
+from .matryoshka import analyze_matryoshka
+from .channel_cipher import analyze_channel_cipher
+
 __all__ = [
     "analyze_advanced_lsb",
     "analyze_binwalk",
@@ -49,4 +59,13 @@ __all__ = [
     "analyze_xor_flag_sweep",
     "analyze_zero_width",
     "analyze_zsteg",
+    # ste.gg parity
+    "analyze_homoglyph",
+    "analyze_whitespace_steg",
+    "analyze_audio_lsb",
+    "analyze_audio_fft",
+    "analyze_audio_echo",
+    "analyze_audio_spectrogram",
+    "analyze_matryoshka",
+    "analyze_channel_cipher",
 ]
