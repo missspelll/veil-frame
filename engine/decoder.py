@@ -16,14 +16,21 @@ from .analyzer_catalog import ANALYZER_CATALOG, normalize_selected_tools
 from .analysis_profiles import resolve_profile
 from .analyzers import (
     analyze_advanced_lsb,
+    analyze_audio_echo,
+    analyze_audio_fft,
+    analyze_audio_lsb,
+    analyze_audio_spectrogram,
     analyze_binwalk,
+    analyze_channel_cipher,
     analyze_decomposer,
     analyze_entropy_anomalies,
     analyze_exiftool,
     analyze_foremost,
+    analyze_homoglyph,
     analyze_invisible_unicode,
     analyze_invisible_unicode_decode,
     analyze_jpeg_qtables,
+    analyze_matryoshka,
     analyze_outguess,
     analyze_payload_unwrap,
     analyze_plane_carver,
@@ -36,6 +43,7 @@ from .analyzers import (
     analyze_steghide,
     analyze_strings,
     analyze_tool_suite,
+    analyze_whitespace_steg,
     analyze_xor_flag_sweep,
     analyze_zero_width,
     analyze_zsteg,
@@ -292,6 +300,38 @@ def _mark_profile_skips(output_dir: Path, *, profile_label: str) -> None:
                 "status": "skipped",
                 "reason": f"Skipped in {profile_label} profile.",
             },
+            "homoglyph": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "whitespace_steg": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "audio_lsb": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "audio_fft": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "audio_echo": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "audio_spectrogram": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "matryoshka": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
+            "channel_cipher": {
+                "status": "skipped",
+                "reason": f"Skipped in {profile_label} profile.",
+            },
         },
     )
 
@@ -373,8 +413,43 @@ def _build_analyzer_plan(
                     (image_path, output_dir, profile.run_decode_deep),
                     {},
                 ),
+                ("homoglyph", analyze_homoglyph, (image_path, output_dir), {}),
+                ("whitespace_steg", analyze_whitespace_steg, (image_path, output_dir), {}),
+                ("audio_lsb", analyze_audio_lsb, (image_path, output_dir), {}),
+                ("audio_spectrogram", analyze_audio_spectrogram, (image_path, output_dir), {}),
             ]
         )
+        if profile.run_decode_deep:
+            plan.extend(
+                [
+                    ("audio_fft", analyze_audio_fft, (image_path, output_dir), {}),
+                    ("audio_echo", analyze_audio_echo, (image_path, output_dir), {}),
+                    ("matryoshka", analyze_matryoshka, (image_path, output_dir), {}),
+                    ("channel_cipher", analyze_channel_cipher, (image_path, output_dir), {}),
+                ]
+            )
+        else:
+            update_data(
+                output_dir,
+                {
+                    "audio_fft": {
+                        "status": "skipped",
+                        "reason": f"Disabled in {profile.label} profile.",
+                    },
+                    "audio_echo": {
+                        "status": "skipped",
+                        "reason": f"Disabled in {profile.label} profile.",
+                    },
+                    "matryoshka": {
+                        "status": "skipped",
+                        "reason": f"Disabled in {profile.label} profile.",
+                    },
+                    "channel_cipher": {
+                        "status": "skipped",
+                        "reason": f"Disabled in {profile.label} profile.",
+                    },
+                },
+            )
         if profile.run_tool_suite:
             plan.append(
                 (
