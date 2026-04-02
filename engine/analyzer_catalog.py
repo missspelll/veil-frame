@@ -284,6 +284,22 @@ ANALYZER_CATALOG: Dict[str, AnalyzerSpec] = {
         profiles=("deep", "forensic"),
         kind="internal",
     ),
+    "decode_options": AnalyzerSpec(
+        analyzer_id="decode_options",
+        label="decode options",
+        description="method-specific decoders (lsb, pvd, dct, f5, chroma, etc.)",
+        eta_seconds=60,
+        profiles=("quick", "balanced", "deep", "forensic"),
+        kind="internal",
+    ),
+    "smart_scan": AnalyzerSpec(
+        analyzer_id="smart_scan",
+        label="smart scan",
+        description="adaptive multi-method scan combining ste.gg heuristics",
+        eta_seconds=45,
+        profiles=("quick", "balanced", "deep", "forensic"),
+        kind="internal",
+    ),
 }
 
 

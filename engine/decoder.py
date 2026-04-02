@@ -186,6 +186,9 @@ def _run_decode_options(
     registry = get_registry()
     option_results: Dict[str, Dict[str, Any]] = {}
 
+    # Separate skipped options from those that need actual computation.
+    tasks: List[Tuple[str, Any, str]] = []  # (option_id, option, mode)
+
     for option_id, option in registry.items():
         if option_id == "auto_detect":
             continue
@@ -197,6 +200,7 @@ def _run_decode_options(
                 status="skipped",
                 summary="Enable spread spectrum to run password-based decoding.",
             )
+            result["mode"] = mode
             update_data(output_dir, {option_id: result})
             option_results[option_id] = result
             continue
@@ -207,10 +211,17 @@ def _run_decode_options(
                 status="skipped",
                 summary="Profile depth is not deep enough for this decoder.",
             )
+            result["mode"] = mode
             update_data(output_dir, {option_id: result})
             option_results[option_id] = result
             continue
 
+        tasks.append((option_id, option, mode))
+
+    def _run_single_option(
+        item: Tuple[str, Any, str],
+    ) -> Tuple[str, Dict[str, Any]]:
+        option_id, option, mode = item
         params = {"password": password}
         try:
             result = option["analyzer"](image_path, **option["params"](option, params))
@@ -226,8 +237,16 @@ def _run_decode_options(
                 "timing_ms": 0,
             }
         result["mode"] = mode
-        update_data(output_dir, {option_id: result})
-        option_results[option_id] = result
+        return option_id, result
+
+    if tasks:
+        max_workers = max(1, min(4, len(tasks)))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(_run_single_option, t): t for t in tasks}
+            for future in as_completed(futures):
+                option_id, result = future.result()
+                update_data(output_dir, {option_id: result})
+                option_results[option_id] = result
 
     auto_option = registry.get("auto_detect")
     if auto_option:
