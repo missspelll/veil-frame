@@ -717,8 +717,15 @@ def analyze_f5(
         )
 
     try:
+        coeff_candidates = []
+        # Try spatial-domain recomputed DCT first (matches our encoder path),
+        # then native JPEG quantized coefficients (for externally-encoded images).
+        spatial = _get_dct_coeffs(input_img)
+        if spatial.size > 0:
+            coeff_candidates.append(spatial)
         native = _get_native_jpeg_coeffs(input_img)
-        coeffs = native if native is not None else _get_dct_coeffs(input_img)
+        if native is not None and native.size > 0:
+            coeff_candidates.append(native)
     except Exception as exc:
         return _result(
             option_id,
@@ -729,7 +736,7 @@ def analyze_f5(
             started_ms=started,
         )
 
-    if coeffs.size == 0:
+    if not coeff_candidates:
         return _result(
             option_id,
             label,
@@ -739,22 +746,28 @@ def analyze_f5(
             started_ms=started,
         )
 
-    bits = _f5_extract_bits(coeffs, k=2, max_bits=max_bytes * 8, password=password)
-    payload = _decode_with_length_prefix(bits)
-    if not payload:
-        payload = _bits_to_bytes(bits)
+    best = None
+    for coeffs in coeff_candidates:
+        bits = _f5_extract_bits(coeffs, k=2, max_bits=max_bytes * 8, password=password)
+        payload = _decode_with_length_prefix(bits)
+        if not payload:
+            payload = _bits_to_bytes(bits)
 
-    magic = _detect_magic(payload)
-    text, ratio = _decode_text(payload)
-    confidence = 0.2
-    summary = "Computed F5 matrix decode stream."
-    if magic:
-        confidence = 0.75
-        summary = f"Recovered {magic} payload via F5 matrix decode."
-    elif ratio >= 0.6:
-        confidence = 0.5
-        summary = "Recovered readable text via F5 matrix decode."
+        magic = _detect_magic(payload)
+        text, ratio = _decode_text(payload)
+        confidence = 0.2
+        summary = "Computed F5 matrix decode stream."
+        if magic:
+            confidence = 0.75
+            summary = f"Recovered {magic} payload via F5 matrix decode."
+        elif ratio >= 0.6:
+            confidence = 0.5
+            summary = "Recovered readable text via F5 matrix decode."
 
+        if best is None or confidence > best[0] or (confidence == best[0] and ratio > best[3]):
+            best = (confidence, summary, text, ratio, magic)
+
+    confidence, summary, text, ratio, magic = best
     status = "ok" if confidence >= 0.25 else "no_signal"
     return _result(
         option_id,
