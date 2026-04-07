@@ -26,7 +26,6 @@ from engine.lite_decoder import run_lite_analysis
 from engine.tooling import get_tool_status
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
-app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8 MB upload limit
 
 
 @app.errorhandler(413)
@@ -37,6 +36,11 @@ def request_entity_too_large(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     return jsonify({"error": f"Internal server error: {error}"}), 500
+
+
+@app.get("/api/health")
+def api_health():
+    return jsonify({"status": "ok"})
 
 
 def sniff_image_mime(image_bytes: bytes) -> str:
