@@ -48,7 +48,7 @@ ANALYZER_CATALOG: Dict[str, AnalyzerSpec] = {
         label="simple lsb",
         description="common lsb text extraction across rgb/rgba planes",
         eta_seconds=30,
-        profiles=("quick", "balanced", "deep", "forensic"),
+        profiles=("minimal", "quick", "balanced", "deep", "forensic"),
         kind="internal",
     ),
     "simple_zlib": AnalyzerSpec(
@@ -56,7 +56,7 @@ ANALYZER_CATALOG: Dict[str, AnalyzerSpec] = {
         label="simple zlib",
         description="zlib stream recovery from typical lsb bitstreams",
         eta_seconds=35,
-        profiles=("quick", "balanced", "deep", "forensic"),
+        profiles=("minimal", "quick", "balanced", "deep", "forensic"),
         kind="internal",
     ),
     "randomizer_decode": AnalyzerSpec(
