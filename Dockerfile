@@ -371,4 +371,7 @@ EXPOSE 5000
 ENV FLASK_ENV=production \
     FLASK_DEBUG=0
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-10000}/api/tools || exit 1
+
 CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --timeout 300 --workers 2 --threads 4 --worker-class gthread app:app"]

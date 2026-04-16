@@ -40,19 +40,21 @@ def analyze_foremost(input_img: Path, output_dir: Path) -> None:
         # stderr += data.stderr
 
         # Zip extracted files
-        zip_data = subprocess.run(
-            ["7z", "a", "../foremost.7z", "*"],
-            cwd=foremost_dir,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=MAX_PENDING_TIME,
-        )
-
-        stderr += zip_data.stderr
+        try:
+            zip_data = subprocess.run(
+                ["7z", "a", "../foremost.7z", "*"],
+                cwd=foremost_dir,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=MAX_PENDING_TIME,
+            )
+            stderr += zip_data.stderr
+        except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+            stderr += f"7z archive failed: {exc}\n"
 
         # Remove the extracted directory
-        shutil.rmtree(foremost_dir)
+        shutil.rmtree(foremost_dir, ignore_errors=True)
 
         data_strings = data.stdout.split("\n") if data else []
         data_strings = [s for s in data_strings if s]
