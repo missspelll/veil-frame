@@ -614,18 +614,21 @@ function loadSelectedToolsForProfile(profileId) {
     return new Set(profileState.selectedToolsByProfile[profileId]);
   }
 
-  const analyzerIds = new Set(
+  const allAnalyzerIds = new Set(
+    profileState.analyzers.map((row) => row.id)
+  );
+  const profileIds = new Set(
     profileState.analyzers
       .filter((row) => row.enabled_in_profile)
       .map((row) => row.id)
   );
   const fallback = Array.isArray(profileState.defaultSelectedTools)
     ? profileState.defaultSelectedTools
-    : Array.from(analyzerIds);
+    : Array.from(profileIds);
 
   const savedRaw = localStorage.getItem(selectedToolsStorageKey(profileId));
   if (!savedRaw) {
-    const initial = fallback.filter((id) => analyzerIds.has(id));
+    const initial = fallback.filter((id) => profileIds.has(id));
     profileState.selectedToolsByProfile[profileId] = initial;
     return new Set(initial);
   }
@@ -633,11 +636,11 @@ function loadSelectedToolsForProfile(profileId) {
   try {
     const parsed = JSON.parse(savedRaw);
     if (!Array.isArray(parsed)) throw new Error('invalid selection');
-    const normalized = parsed.map((item) => String(item || '').toLowerCase()).filter((id) => analyzerIds.has(id));
+    const normalized = parsed.map((item) => String(item || '').toLowerCase()).filter((id) => allAnalyzerIds.has(id));
     profileState.selectedToolsByProfile[profileId] = normalized;
     return new Set(normalized);
   } catch {
-    const initial = fallback.filter((id) => analyzerIds.has(id));
+    const initial = fallback.filter((id) => profileIds.has(id));
     profileState.selectedToolsByProfile[profileId] = initial;
     return new Set(initial);
   }
@@ -663,12 +666,13 @@ function renderAnalyzerSelector(profileId) {
   const html = profileState.analyzers.map((tool) => {
     const id = String(tool.id || '').toLowerCase();
     const enabled = !!tool.enabled_in_profile;
-    const checked = enabled && selectedSet.has(id);
+    const checked = selectedSet.has(id);
+    const offProfile = !enabled && checked;
     return `
-      <label class="analyzer-pill ${enabled ? '' : 'unavailable'}">
-        <input type="checkbox" class="analyzer-checkbox" value="${escapeHtml(id)}" ${checked ? 'checked' : ''} ${enabled ? '' : 'disabled'}>
+      <label class="analyzer-pill ${enabled ? '' : checked ? 'off-profile' : 'unavailable'}">
+        <input type="checkbox" class="analyzer-checkbox" value="${escapeHtml(id)}" ${checked ? 'checked' : ''}>
         <div class="analyzer-meta">
-          <span class="analyzer-name">${escapeHtml(stylizeUi(tool.label || id))}</span>
+          <span class="analyzer-name">${escapeHtml(stylizeUi(tool.label || id))}${offProfile ? ' <span class="off-profile-badge">+</span>' : ''}</span>
           <span class="analyzer-eta">${escapeHtml(stylizeUi(`eta ${tool.eta_label || ''}`))}</span>
           <span class="analyzer-desc">${escapeHtml(stylizeUi(tool.description || ''))}</span>
         </div>
@@ -711,7 +715,7 @@ if (analyzerGridEl) {
     const selected = new Set();
     analyzerGridEl.querySelectorAll('input.analyzer-checkbox').forEach((checkbox) => {
       if (!(checkbox instanceof HTMLInputElement)) return;
-      if (!checkbox.checked || checkbox.disabled) return;
+      if (!checkbox.checked) return;
       selected.add(String(checkbox.value || '').toLowerCase());
     });
     persistSelectedToolsForProfile(profileId, selected);
@@ -724,7 +728,6 @@ if (selectAllToolsBtn) {
     const profileId = selectedProfileId();
     const all = new Set(
       profileState.analyzers
-        .filter((row) => row.enabled_in_profile)
         .map((row) => String(row.id || '').toLowerCase())
     );
     persistSelectedToolsForProfile(profileId, all);
@@ -754,30 +757,88 @@ if (selectProfileToolsBtn) {
   });
 }
 
+function toolMatchesAnalyzer(toolName) {
+  const normalized = toolName.replace(/[-\s]/g, '_').toLowerCase();
+  return profileState.analyzers.find(
+    (a) => a.id === normalized || a.id === toolName.toLowerCase()
+  );
+}
+
+function isToolAnalyzerSelected(toolName, profileId) {
+  const selected = loadSelectedToolsForProfile(profileId);
+  const analyzer = toolMatchesAnalyzer(toolName);
+  return analyzer ? selected.has(analyzer.id) : false;
+}
+
+function toggleToolAnalyzer(toolName, checked) {
+  const profileId = selectedProfileId();
+  const analyzer = toolMatchesAnalyzer(toolName);
+  if (!analyzer) return;
+  const selected = loadSelectedToolsForProfile(profileId);
+  if (checked) {
+    selected.add(analyzer.id);
+  } else {
+    selected.delete(analyzer.id);
+  }
+  persistSelectedToolsForProfile(profileId, selected);
+  renderAnalyzerSelector(profileId);
+  // Update tool count chip without re-rendering tool pills (avoids loop)
+  const profile = profileState.byId[profileId] || profileState.byId[profileState.defaultProfile];
+  if (profile && analysisToolsEl) {
+    const externalTools = Array.isArray(profile.external_tools) ? profile.external_tools : [];
+    const internalTools = Array.isArray(profile.internal_tools) ? profile.internal_tools : [];
+    const selectedCount = selectedAnalyzerIds(profileId).length;
+    const available = externalTools.filter((name) => profileState.tools[name]?.available).length;
+    const total = externalTools.length;
+    if (!total) {
+      analysisToolsEl.textContent = stylizeUi(`tools: ${selectedCount} selected · ${internalTools.length} internal`);
+    } else {
+      analysisToolsEl.textContent = stylizeUi(`tools: ${selectedCount} selected · ${available}/${total} external + ${internalTools.length} internal`);
+    }
+  }
+}
+
 function renderToolPills(profile) {
   if (!toolStatusEl) return;
   const externalTools = Array.isArray(profile?.external_tools) ? profile.external_tools : [];
   const internalTools = Array.isArray(profile?.internal_tools) ? profile.internal_tools : [];
+  const profileId = profile.id || selectedProfileId();
 
   const externalHtml = externalTools.map((name) => {
     const info = profileState.tools[name] || { available: false, path: '' };
     const ok = !!info.available;
-    const icon = ok ? '✅' : '❌';
     const cls = ok ? 'ok' : 'missing';
+    const analyzer = toolMatchesAnalyzer(name);
+    const hasAnalyzer = !!analyzer;
+    const checked = hasAnalyzer && isToolAnalyzerSelected(name, profileId);
+    const disabled = !hasAnalyzer;
     return `
-      <div class="tool-pill">
-        <div class="tool-top"><span class="tool-icon ${cls}">${icon}</span><span class="tool-name">${escapeHtml(stylizeUi(name))}</span></div>
+      <label class="tool-pill ${disabled ? 'tool-pill-disabled' : 'tool-pill-clickable'} ${!ok ? 'tool-pill-missing' : ''}">
+        <div class="tool-top">
+          <input type="checkbox" class="tool-status-checkbox" data-tool="${escapeHtml(name)}"
+            ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+          <span class="tool-name">${escapeHtml(stylizeUi(name))}</span>
+          <span class="tool-icon ${cls}">${ok ? '●' : '○'}</span>
+        </div>
         <span class="tool-path">${escapeHtml(info.path || stylizeUi('not installed'))}</span>
-      </div>
+      </label>
     `;
   }).join('');
 
   const internalHtml = internalTools.map((name) => {
+    const analyzer = toolMatchesAnalyzer(name);
+    const hasAnalyzer = !!analyzer;
+    const checked = hasAnalyzer && isToolAnalyzerSelected(name, profileId);
     return `
-      <div class="tool-pill">
-        <div class="tool-top"><span class="tool-icon ok">✦</span><span class="tool-name">${escapeHtml(stylizeUi(name))}</span></div>
+      <label class="tool-pill tool-pill-clickable">
+        <div class="tool-top">
+          <input type="checkbox" class="tool-status-checkbox" data-tool="${escapeHtml(name)}"
+            ${checked ? 'checked' : ''} ${!hasAnalyzer ? 'disabled' : ''}>
+          <span class="tool-name">${escapeHtml(stylizeUi(name))}</span>
+          <span class="tool-icon ok">✦</span>
+        </div>
         <span class="tool-path">${escapeHtml(stylizeUi('internal python analyzer'))}</span>
-      </div>
+      </label>
     `;
   }).join('');
 
@@ -817,22 +878,64 @@ if (analysisProfileSelect) {
   });
 }
 
+if (toolStatusEl) {
+  toolStatusEl.addEventListener('change', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (!target.classList.contains('tool-status-checkbox')) return;
+    const toolName = target.dataset.tool;
+    if (toolName) toggleToolAnalyzer(toolName, target.checked);
+  });
+}
+
 function compactLines(lines, maxLines = 40) {
   const filtered = lines.filter((line) => String(line || '').trim());
   if (filtered.length <= maxLines) return filtered;
   return [...filtered.slice(0, maxLines), `... (${filtered.length - maxLines} more lines)`];
 }
 
+function isBinaryJunk(text) {
+  if (!text || text.length < 8) return false;
+  let nonPrintable = 0;
+  const sample = text.slice(0, 512);
+  for (let i = 0; i < sample.length; i++) {
+    const code = sample.charCodeAt(i);
+    if (code < 32 && code !== 9 && code !== 10 && code !== 13) nonPrintable++;
+    else if (code >= 127 && code <= 159) nonPrintable++;
+    else if (code >= 0xf0 && code <= 0xff) nonPrintable++;
+    else if (code === 0xfffd) nonPrintable++;
+  }
+  return nonPrintable / sample.length > 0.3;
+}
+
+function sanitizeOutput(text, maxLen = 2000) {
+  if (!text) return text;
+  if (isBinaryJunk(text)) {
+    const len = text.length;
+    const preview = Array.from(text.slice(0, 32))
+      .map((ch) => {
+        const code = ch.charCodeAt(0);
+        return code < 32 || code >= 127 ? `\\x${code.toString(16).padStart(2, '0')}` : ch;
+      })
+      .join('');
+    return `[binary data, ${len} bytes] ${preview}…`;
+  }
+  if (text.length > maxLen) {
+    return text.slice(0, maxLen) + `\n… (${text.length - maxLen} more characters)`;
+  }
+  return text;
+}
+
 function payloadBlocks(payload) {
   const blocks = [];
 
   if (typeof payload?.output === 'string' && payload.output.trim()) {
-    blocks.push({ title: 'payload', text: payload.output.trim() });
+    blocks.push({ title: 'payload', text: sanitizeOutput(payload.output.trim()) });
   }
 
   if (Array.isArray(payload?.output)) {
     const joined = compactLines(payload.output.map((line) => String(line))).join('\n');
-    if (joined.trim()) blocks.push({ title: 'payload', text: joined });
+    if (joined.trim()) blocks.push({ title: 'payload', text: sanitizeOutput(joined) });
   }
 
   if (payload?.decoded_text && typeof payload.decoded_text === 'object') {
@@ -975,6 +1078,14 @@ function renderToolCard(toolKey, payload, wide = false) {
   `;
 }
 
+function isResultUseful(payload) {
+  if (!payload || typeof payload !== 'object') return false;
+  const status = String(payload.status || '').toLowerCase();
+  if (status === 'skipped') return false;
+  if (status === 'empty' && !payload.output && !payload.decoded_text && !payload.matches) return false;
+  return true;
+}
+
 function renderDecodeResult(data) {
   const results = data.results || {};
   const artifacts = data.artifacts || { images: [], archives: [] };
@@ -984,23 +1095,23 @@ function renderDecodeResult(data) {
   const stringsKey = 'strings';
 
   const cardsPlanes = planeKeys
-    .filter((key) => results[key])
+    .filter((key) => results[key] && isResultUseful(results[key]))
     .map((key) => renderToolCard(key, results[key]))
     .join('');
 
   const primary = ['invisible_unicode_decode', 'auto_detect']
-    .filter((key) => results[key])
+    .filter((key) => results[key] && isResultUseful(results[key]))
     .map((key) => renderToolCard(key, results[key]))
     .join('');
 
   const rankedKeys = (results.auto_detect?.details?.candidates || [])
     .map((candidate) => candidate.option_id)
-    .filter((key, idx, arr) => key && arr.indexOf(key) === idx && results[key]);
+    .filter((key, idx, arr) => key && arr.indexOf(key) === idx && results[key] && isResultUseful(results[key]));
 
   const topCards = rankedKeys.map((key) => renderToolCard(key, results[key])).join('');
 
   const otherDecode = decodeOptionPriority
-    .filter((key) => key !== 'auto_detect' && results[key] && !rankedKeys.includes(key))
+    .filter((key) => key !== 'auto_detect' && results[key] && !rankedKeys.includes(key) && isResultUseful(results[key]))
     .map((key) => renderToolCard(key, results[key]))
     .join('');
 
@@ -1008,6 +1119,7 @@ function renderDecodeResult(data) {
     .filter(
       (key) =>
         results[key] &&
+        isResultUseful(results[key]) &&
         !planeKeys.includes(key) &&
         !decodeOptionPriority.includes(key) &&
         key !== stringsKey &&
@@ -1019,6 +1131,8 @@ function renderDecodeResult(data) {
   const remaining = Object.keys(results)
     .filter(
       (key) =>
+        results[key] &&
+        isResultUseful(results[key]) &&
         !planeKeys.includes(key) &&
         !decodeOptionPriority.includes(key) &&
         !restOrder.includes(key) &&
@@ -1028,7 +1142,7 @@ function renderDecodeResult(data) {
     .map((key) => renderToolCard(key, results[key]))
     .join('');
 
-  const stringsCard = results[stringsKey] ? renderToolCard(stringsKey, results[stringsKey], true) : '';
+  const stringsCard = results[stringsKey] && isResultUseful(results[stringsKey]) ? renderToolCard(stringsKey, results[stringsKey], true) : '';
 
   const gallery = (artifacts.images || [])
     .map((img) => `<div><img src="${img.data_url}" alt="${escapeHtml(img.name)}"><div class="status-line">${escapeHtml(img.name)}</div></div>`)
@@ -1046,9 +1160,19 @@ function renderDecodeResult(data) {
     </div>
   `;
 
+  const skippedNames = Object.entries(results)
+    .filter(([, payload]) => payload && String(payload.status || '').toLowerCase() === 'skipped')
+    .map(([key, payload]) => escapeHtml(stylizeUi(payload.label || key)));
+  const skippedSummary = skippedNames.length
+    ? `<details class="meta-toggle" style="margin-top:8px;">
+        <summary>${escapeHtml(stylizeUi(`${skippedNames.length} analyzers skipped`))}</summary>
+        <div style="color:var(--muted);font-size:11px;padding:8px 0;line-height:1.6;">${skippedNames.join(', ')}</div>
+      </details>`
+    : '';
+
   decodeOutput.innerHTML = `
     ${metaLine}
-    <div class="result-grid priority-grid">${cardsPlanes}</div>
+    ${cardsPlanes ? `<div class="result-grid priority-grid">${cardsPlanes}</div>` : ''}
     ${primary ? `<div class="result-grid">${primary}</div>` : ''}
     ${topCards ? `<div class="result-grid">${topCards}</div>` : ''}
     ${otherDecode ? `<div class="result-grid">${otherDecode}</div>` : ''}
@@ -1056,6 +1180,7 @@ function renderDecodeResult(data) {
     <div class="result-grid">${restCards}${remaining}</div>
     ${downloads ? `<div class="downloads" style="margin-top:12px;">${downloads}</div>` : ''}
     ${stringsCard ? `<div class="result-grid strings-block">${stringsCard}</div>` : ''}
+    ${skippedSummary}
   `;
 }
 

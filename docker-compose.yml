@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    platform: linux/amd64
     image: veilframe-web:dev
     environment:
       - FLASK_ENV=development
