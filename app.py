@@ -36,7 +36,8 @@ def request_entity_too_large(error):
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    return jsonify({"error": f"Internal server error: {error}"}), 500
+    app.logger.error("Internal server error: %s", error, exc_info=True)
+    return jsonify({"error": "Internal server error"}), 500
 
 
 def sniff_image_mime(image_bytes: bytes) -> str:

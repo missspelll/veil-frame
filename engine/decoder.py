@@ -715,11 +715,19 @@ def run_analysis(
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {executor.submit(run_task, task): task for task in plan}
             for future in as_completed(futures):
-                name, success, elapsed = future.result()
-                analyzer_timing[name] = {
-                    "status": "ok" if success else "error",
-                    "timing_ms": elapsed,
-                }
+                try:
+                    name, success, elapsed = future.result(timeout=300)
+                    analyzer_timing[name] = {
+                        "status": "ok" if success else "error",
+                        "timing_ms": elapsed,
+                    }
+                except Exception as exc:
+                    task_name = futures[future][0]
+                    print(f"Task {task_name} raised unexpected exception: {exc}")
+                    analyzer_timing[task_name] = {
+                        "status": "error",
+                        "timing_ms": 0,
+                    }
 
         try:
             results = _read_results_file(output_dir)
