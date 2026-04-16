@@ -309,12 +309,19 @@ def list_analyzer_catalog(profile_id: Optional[str] = None) -> List[Dict[str, ob
 
 
 def default_selected_for_profile(profile_id: Optional[str]) -> List[str]:
+    """Return the minimal default analyzer selection.
+
+    The UI defaults to a single tool (simple_lsb) across all profiles; users can
+    expand via the "all" / "rec" buttons or tick analyzers individually.
+    """
     profile = (profile_id or "balanced").strip().lower() or "balanced"
-    selected: List[str] = []
+    simple = ANALYZER_CATALOG.get("simple_lsb")
+    if simple and profile in simple.profiles:
+        return ["simple_lsb"]
     for spec in ANALYZER_CATALOG.values():
         if profile in spec.profiles:
-            selected.append(spec.analyzer_id)
-    return sorted(selected)
+            return [spec.analyzer_id]
+    return []
 
 
 def normalize_selected_tools(raw_tools: Optional[List[str]]) -> Optional[Set[str]]:

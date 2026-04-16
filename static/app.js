@@ -6,6 +6,7 @@ const panels = {
 const modeButtons = document.querySelectorAll('.mode-btn');
 const toolStatusEl = document.getElementById('tool-status-list');
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const COMPRESS_TARGET_BYTES = 900 * 1024; // Twitter-safe ~900 KB
 const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg']);
 const ALLOWED_IMAGE_EXTS = ['.png', '.jpg', '.jpeg'];
 
@@ -122,6 +123,7 @@ const profileState = {
   analyzerById: {},
   defaultSelectedTools: [],
   selectedToolsByProfile: {},
+  loaded: false,
 };
 
 const unicode_lower = {
@@ -184,6 +186,78 @@ function validateImageFile(file) {
   if (!isSupportedImage(file)) return stylizeUi('unsupported image type. please use png or jpg.');
   if (file.size > MAX_IMAGE_BYTES) return stylizeUi(`image too large. try under ${(MAX_IMAGE_BYTES / (1024 * 1024)).toFixed(1)} mb.`);
   return null;
+}
+
+async function loadImageBitmap(file) {
+  if (typeof createImageBitmap === 'function') {
+    try {
+      return await createImageBitmap(file);
+    } catch (_) {
+      /* fall through to HTMLImageElement */
+    }
+  }
+  return await new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = (err) => {
+      URL.revokeObjectURL(url);
+      reject(err || new Error('image load failed'));
+    };
+    img.src = url;
+  });
+}
+
+function canvasToPngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) return reject(new Error('png encoding failed'));
+      resolve(blob);
+    }, 'image/png');
+  });
+}
+
+function pngFilename(original) {
+  const base = String(original || 'image').replace(/\.[^.]+$/, '');
+  return `${base || 'image'}.png`;
+}
+
+async function compressImageForUpload(file, targetBytes = COMPRESS_TARGET_BYTES) {
+  if (!file) return file;
+
+  const bitmap = await loadImageBitmap(file);
+  const srcWidth = bitmap.width || bitmap.naturalWidth;
+  const srcHeight = bitmap.height || bitmap.naturalHeight;
+  if (!srcWidth || !srcHeight) {
+    if (bitmap.close) bitmap.close();
+    return file;
+  }
+
+  let width = srcWidth;
+  let height = srcHeight;
+  let blob = null;
+  const maxIterations = 10;
+
+  for (let i = 0; i < maxIterations; i += 1) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width));
+    canvas.height = Math.max(1, Math.round(height));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) break;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    blob = await canvasToPngBlob(canvas);
+    if (blob.size <= targetBytes) break;
+    if (canvas.width <= 2 || canvas.height <= 2) break;
+    width = Math.floor(width * 0.75);
+    height = Math.floor(height * 0.75);
+  }
+
+  if (bitmap.close) bitmap.close();
+  if (!blob) return file;
+  return new File([blob], pngFilename(file.name), { type: 'image/png' });
 }
 
 function formatDurationMs(ms) {
@@ -437,8 +511,6 @@ if (encodeForm) {
       return;
     }
 
-    encodeOutput.innerHTML = `<div class="status-line">${escapeHtml(stylizeUi('encoding…'))}</div>`;
-
     const encodeMethod = encodeMethodSelect ? encodeMethodSelect.value : 'simple_lsb';
     const payloadMode = getPayloadMode();
     const payloadFile = payloadFileInput && payloadFileInput.files ? payloadFileInput.files[0] : null;
@@ -455,8 +527,27 @@ if (encodeForm) {
       }
     }
 
+    const jpegOutputMethods = new Set(['f5', 'dct']);
+    let uploadCarrier = carrierFile;
+    const needsCompression =
+      !jpegOutputMethods.has(encodeMethod) &&
+      (carrierFile.type !== 'image/png' || carrierFile.size > COMPRESS_TARGET_BYTES);
+
+    if (needsCompression) {
+      encodeOutput.innerHTML = `<div class="status-line">${escapeHtml(stylizeUi('auto-converting to png & compressing…'))}</div>`;
+      try {
+        uploadCarrier = await compressImageForUpload(carrierFile);
+      } catch (err) {
+        encodeOutput.innerHTML = `<div class="status-line error">${escapeHtml(stylizeUi(`compression failed: ${err.message || err}`))}</div>`;
+        return;
+      }
+    }
+
+    encodeOutput.innerHTML = `<div class="status-line">${escapeHtml(stylizeUi('encoding…'))}</div>`;
+
     const fd = new FormData(encodeForm);
     fd.set('encodeMethod', encodeMethod);
+    fd.set('image', uploadCarrier, uploadCarrier.name || pngFilename(carrierFile.name));
 
     try {
       if (encodeMethod === 'advanced_lsb') {
@@ -564,6 +655,7 @@ function startLiveTimer(prefix) {
 }
 
 async function loadProfilesAndTools() {
+  if (profileState.loaded) return;
   try {
     const [profileRes, toolsRes] = await Promise.all([
       fetch('/api/profiles'),
@@ -594,6 +686,7 @@ async function loadProfilesAndTools() {
     await loadAnalyzerCatalog(initialProfile);
     syncProfileUI();
     syncAdvancedOptions(initialProfile);
+    profileState.loaded = true;
   } catch {
     if (toolStatusEl) toolStatusEl.innerHTML = `<div class="status-line">${stylizeUi('tool status unavailable')}</div>`;
     if (profileDescriptionEl) profileDescriptionEl.textContent = stylizeUi('unable to load analysis profiles.');
@@ -813,7 +906,6 @@ if (analysisProfileSelect) {
     const profileId = selectedProfileId();
     await loadAnalyzerCatalog(profileId);
     syncProfileUI();
-    syncAdvancedOptions(profileId);
   });
 }
 
@@ -1075,7 +1167,6 @@ if (decodeForm) {
     fd.set('analysisProfile', profileId);
     fd.set('selectedTools', JSON.stringify(selectedAnalyzerIds(profileId)));
 
-    showPanel('decode-panel');
     const stopTimer = startLiveTimer(stylizeUi('status: running'));
     decodeOutput.innerHTML = `<div class="status-line">${escapeHtml(stylizeUi('running analyzers…'))}</div>`;
 
