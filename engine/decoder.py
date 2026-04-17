@@ -630,7 +630,7 @@ def run_analysis(
                 },
             }
 
-        if profile.profile_id == "simple":
+        if profile.profile_id == "simple" or selected_tool_set is not None:
             plane_results: Dict[str, Any] = {}
         else:
             try:
@@ -703,6 +703,9 @@ def run_analysis(
             results = {}
 
         results = {**plane_results, **results}
+
+        if selected_tool_set is not None:
+            results = {k: v for k, v in results.items() if k in selected_tool_set}
 
         try:
             artifacts = _collect_artifacts(output_dir)
