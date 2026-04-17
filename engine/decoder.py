@@ -336,24 +336,6 @@ def _mark_profile_skips(output_dir: Path, *, profile_label: str) -> None:
     )
 
 
-def _mark_deselected_skips(
-    output_dir: Path,
-    analyzer_ids: Set[str],
-    *,
-    reason: str = "disabled by custom tool selection",
-) -> None:
-    if not analyzer_ids:
-        return
-    payload = {
-        analyzer_id: {
-            "status": "skipped",
-            "reason": reason,
-        }
-        for analyzer_id in sorted(analyzer_ids)
-    }
-    update_data(output_dir, payload)
-
-
 def _build_analyzer_plan(
     image_path: Path,
     output_dir: Path,
@@ -544,17 +526,7 @@ def _build_analyzer_plan(
     if selected_tools is None:
         return plan
 
-    selected_plan: List[Tuple[str, Any, Tuple[Any, ...], Dict[str, Any]]] = []
-    deselected_ids: Set[str] = set()
-    for task in plan:
-        analyzer_id = task[0]
-        if analyzer_id in selected_tools:
-            selected_plan.append(task)
-        else:
-            deselected_ids.add(analyzer_id)
-
-    _mark_deselected_skips(output_dir, deselected_ids)
-    return selected_plan
+    return [task for task in plan if task[0] in selected_tools]
 
 
 def run_analysis(
