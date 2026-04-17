@@ -658,14 +658,9 @@ def run_analysis(
                 },
             }
 
-        run_plane_payloads = (
-            selected_tool_set is None or "plane_payloads" in selected_tool_set
-        )
-        run_option_decoders = (
-            selected_tool_set is None or "option_decoders" in selected_tool_set
-        )
-
-        if run_plane_payloads:
+        if profile.profile_id == "simple":
+            plane_results: Dict[str, Any] = {}
+        else:
             try:
                 simple_rgb_text, channel_texts = extract_plane_payloads(image_path)
             except Exception as exc:
@@ -680,10 +675,7 @@ def run_analysis(
 
             plane_results = plane_payload_results(simple_rgb_text, channel_texts)
             update_data(output_dir, plane_results)
-        else:
-            plane_results: Dict[str, Any] = {}
 
-        if run_option_decoders:
             _run_decode_options(
                 image_path,
                 output_dir,

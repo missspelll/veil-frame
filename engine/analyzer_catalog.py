@@ -27,22 +27,6 @@ class AnalyzerSpec:
 
 
 ANALYZER_CATALOG: Dict[str, AnalyzerSpec] = {
-    "plane_payloads": AnalyzerSpec(
-        analyzer_id="plane_payloads",
-        label="plane payloads",
-        description="simple rgb + per-channel plane text extraction",
-        eta_seconds=10,
-        profiles=("quick", "balanced", "deep", "forensic"),
-        kind="internal",
-    ),
-    "option_decoders": AnalyzerSpec(
-        analyzer_id="option_decoders",
-        label="format decoders",
-        description="auto-detect sweep across lsb/pvd/dct/f5/palette/chroma/png chunks",
-        eta_seconds=25,
-        profiles=("quick", "balanced", "deep", "forensic"),
-        kind="internal",
-    ),
     "pre_analysis": AnalyzerSpec(
         analyzer_id="pre_analysis",
         label="smart pre-scan",
