@@ -48,7 +48,7 @@ ANALYZER_CATALOG: Dict[str, AnalyzerSpec] = {
         label="simple lsb",
         description="common lsb text extraction across rgb/rgba planes",
         eta_seconds=30,
-        profiles=("quick", "balanced", "deep", "forensic"),
+        profiles=("simple", "quick", "balanced", "deep", "forensic"),
         kind="internal",
     ),
     "simple_zlib": AnalyzerSpec(
@@ -309,7 +309,7 @@ def list_analyzer_catalog(profile_id: Optional[str] = None) -> List[Dict[str, ob
 
 
 def default_selected_for_profile(profile_id: Optional[str]) -> List[str]:
-    profile = (profile_id or "balanced").strip().lower() or "balanced"
+    profile = (profile_id or "simple").strip().lower() or "simple"
     selected: List[str] = []
     for spec in ANALYZER_CATALOG.values():
         if profile in spec.profiles:

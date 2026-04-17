@@ -336,24 +336,6 @@ def _mark_profile_skips(output_dir: Path, *, profile_label: str) -> None:
     )
 
 
-def _mark_deselected_skips(
-    output_dir: Path,
-    analyzer_ids: Set[str],
-    *,
-    reason: str = "disabled by custom tool selection",
-) -> None:
-    if not analyzer_ids:
-        return
-    payload = {
-        analyzer_id: {
-            "status": "skipped",
-            "reason": reason,
-        }
-        for analyzer_id in sorted(analyzer_ids)
-    }
-    update_data(output_dir, payload)
-
-
 def _build_analyzer_plan(
     image_path: Path,
     output_dir: Path,
@@ -544,17 +526,7 @@ def _build_analyzer_plan(
     if selected_tools is None:
         return plan
 
-    selected_plan: List[Tuple[str, Any, Tuple[Any, ...], Dict[str, Any]]] = []
-    deselected_ids: Set[str] = set()
-    for task in plan:
-        analyzer_id = task[0]
-        if analyzer_id in selected_tools:
-            selected_plan.append(task)
-        else:
-            deselected_ids.add(analyzer_id)
-
-    _mark_deselected_skips(output_dir, deselected_ids)
-    return selected_plan
+    return [task for task in plan if task[0] in selected_tools]
 
 
 def run_analysis(
@@ -658,29 +630,32 @@ def run_analysis(
                 },
             }
 
-        try:
-            simple_rgb_text, channel_texts = extract_plane_payloads(image_path)
-        except Exception as exc:
-            print(f"Warning: Failed to decode plane payloads: {str(exc)}")
-            simple_rgb_text = ""
-            channel_texts = {
-                "red_plane": "",
-                "green_plane": "",
-                "blue_plane": "",
-                "alpha_plane": "",
-            }
+        if profile.profile_id == "simple" or selected_tool_set is not None:
+            plane_results: Dict[str, Any] = {}
+        else:
+            try:
+                simple_rgb_text, channel_texts = extract_plane_payloads(image_path)
+            except Exception as exc:
+                print(f"Warning: Failed to decode plane payloads: {str(exc)}")
+                simple_rgb_text = ""
+                channel_texts = {
+                    "red_plane": "",
+                    "green_plane": "",
+                    "blue_plane": "",
+                    "alpha_plane": "",
+                }
 
-        plane_results = plane_payload_results(simple_rgb_text, channel_texts)
-        update_data(output_dir, plane_results)
+            plane_results = plane_payload_results(simple_rgb_text, channel_texts)
+            update_data(output_dir, plane_results)
 
-        _run_decode_options(
-            image_path,
-            output_dir,
-            password=password,
-            deep_analysis=profile.run_decode_deep,
-            spread_enabled=spread_enabled,
-            input_mime=input_mime,
-        )
+            _run_decode_options(
+                image_path,
+                output_dir,
+                password=password,
+                deep_analysis=profile.run_decode_deep,
+                spread_enabled=spread_enabled,
+                input_mime=input_mime,
+            )
 
         plan = _build_analyzer_plan(
             image_path,
@@ -728,6 +703,9 @@ def run_analysis(
             results = {}
 
         results = {**plane_results, **results}
+
+        if selected_tool_set is not None:
+            results = {k: v for k, v in results.items() if k in selected_tool_set}
 
         try:
             artifacts = _collect_artifacts(output_dir)

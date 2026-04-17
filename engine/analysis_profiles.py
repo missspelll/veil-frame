@@ -37,6 +37,20 @@ def _format_eta(seconds: int) -> str:
 
 
 _PROFILES: Dict[str, AnalysisProfile] = {
+    "simple": AnalysisProfile(
+        profile_id="simple",
+        label="Simple",
+        description="Single-tool default: simple LSB text extraction only.",
+        eta_seconds=(5, 30),
+        run_external_basic=False,
+        run_tool_suite=False,
+        run_decode_deep=False,
+        run_plane_carver=False,
+        run_outguess=False,
+        run_manual_tools=False,
+        internal_tools=("simple_lsb",),
+        external_tools=(),
+    ),
     "quick": AnalysisProfile(
         profile_id="quick",
         label="Quick",
@@ -285,7 +299,7 @@ _PROFILES: Dict[str, AnalysisProfile] = {
     ),
 }
 
-DEFAULT_PROFILE = "balanced"
+DEFAULT_PROFILE = "simple"
 
 
 def normalize_profile(profile: Optional[str]) -> str:
@@ -316,7 +330,7 @@ def get_profile(profile: Optional[str]) -> AnalysisProfile:
 
 def list_profiles() -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
-    for key in ("quick", "balanced", "deep", "forensic"):
+    for key in ("simple", "quick", "balanced", "deep", "forensic"):
         profile = _PROFILES[key]
         rows.append(
             {
