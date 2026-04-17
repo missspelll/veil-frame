@@ -309,9 +309,7 @@ modeButtons.forEach((btn) => {
   btn.addEventListener('click', () => showPanel(btn.dataset.target, true));
 });
 
-const savedPanel = localStorage.getItem('activePanel');
-const initialPanel = savedPanel === 'decode-panel' || savedPanel === 'encode-panel' ? savedPanel : 'encode-panel';
-showPanel(initialPanel, false);
+showPanel('encode-panel', false);
 
 const encodeMethodSelect = document.getElementById('encode-method');
 const simplePlaneField = document.getElementById('simple-plane-field');
@@ -414,61 +412,6 @@ function bindFileLabel(inputEl, labelEl, emptyLabel) {
 bindFileLabel(carrierInput, carrierFilename, 'no photo chosen');
 bindFileLabel(analyzeInput, analyzeFilename, 'no photo chosen');
 bindFileLabel(payloadFileInput, payloadFileName, 'no file');
-
-const carrierUrlInput = document.getElementById('carrier-url');
-const carrierUrlButton = document.getElementById('carrier-url-fetch');
-const carrierUrlStatus = document.getElementById('carrier-url-status');
-
-function setCarrierUrlStatus(text) {
-  if (carrierUrlStatus) carrierUrlStatus.textContent = text ? stylizeUi(text) : '';
-}
-
-async function fetchCarrierFromUrl(rawUrl) {
-  const url = (rawUrl || '').trim();
-  if (!url) return;
-  try {
-    const u = new URL(url);
-    if (!['http:', 'https:', 'data:'].includes(u.protocol)) {
-      throw new Error('only http(s) or data urls are allowed');
-    }
-  } catch (err) {
-    setCarrierUrlStatus(`invalid url: ${err.message || err}`);
-    return;
-  }
-  setCarrierUrlStatus('fetching website image…');
-  try {
-    const res = await fetch(url, { mode: 'cors' });
-    if (!res.ok) throw new Error(`http ${res.status}`);
-    const blob = await res.blob();
-    const mime = blob.type && ALLOWED_IMAGE_TYPES.has(blob.type) ? blob.type : 'image/png';
-    const ext = mime === 'image/jpeg' ? '.jpg' : '.png';
-    const parts = url.split('/');
-    const baseName = (parts[parts.length - 1] || 'remote').split('?')[0].split('#')[0] || 'remote';
-    const name = baseName.match(/\.(png|jpe?g)$/i) ? baseName : `${baseName}${ext}`;
-    const file = new File([blob], name, { type: mime });
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      setCarrierUrlStatus('remote file is not a png/jpeg image');
-      return;
-    }
-    const { file: finalFile, changed } = await compressImageFile(file);
-    assignFileToInput(carrierInput, finalFile);
-    setCarrierUrlStatus(changed ? `loaded and compressed to ${formatFileSize(finalFile.size)}` : `loaded ${formatFileSize(finalFile.size)}`);
-  } catch (err) {
-    setCarrierUrlStatus(`fetch failed: ${err.message || err}. remote site may block cross-origin.`);
-  }
-}
-
-if (carrierUrlButton) {
-  carrierUrlButton.addEventListener('click', () => fetchCarrierFromUrl(carrierUrlInput?.value));
-}
-if (carrierUrlInput) {
-  carrierUrlInput.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Enter') {
-      ev.preventDefault();
-      fetchCarrierFromUrl(carrierUrlInput.value);
-    }
-  });
-}
 
 async function autoCompressCarrier() {
   if (!carrierInput || !carrierInput.files || !carrierInput.files[0]) return;
