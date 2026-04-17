@@ -6,6 +6,7 @@ const panels = {
 const modeButtons = document.querySelectorAll('.mode-btn');
 const toolStatusEl = document.getElementById('tool-status-list');
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const AUTO_COMPRESS_TARGET_BYTES = 7 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg']);
 const ALLOWED_IMAGE_EXTS = ['.png', '.jpg', '.jpeg'];
 
@@ -182,8 +183,78 @@ function isSupportedImage(file) {
 function validateImageFile(file) {
   if (!file) return stylizeUi('please choose an image to upload.');
   if (!isSupportedImage(file)) return stylizeUi('unsupported image type. please use png or jpg.');
-  if (file.size > MAX_IMAGE_BYTES) return stylizeUi(`image too large. try under ${(MAX_IMAGE_BYTES / (1024 * 1024)).toFixed(1)} mb.`);
+  if (file.size > MAX_IMAGE_BYTES) return stylizeUi(`image too large. try under ${(MAX_IMAGE_BYTES / 1024).toFixed(0)} kb.`);
   return null;
+}
+
+function formatFileSize(bytes) {
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} kb`;
+  return `${(kb / 1024).toFixed(2)} mb (${kb.toFixed(0)} kb)`;
+}
+
+async function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('could not decode image data'));
+      img.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error('could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) reject(new Error('could not encode image'));
+      else resolve(blob);
+    }, type, quality);
+  });
+}
+
+async function compressImageFile(file, targetBytes = AUTO_COMPRESS_TARGET_BYTES) {
+  if (file.size <= targetBytes) return { file, changed: false };
+
+  const img = await loadImageFromFile(file);
+  const isPng = file.type === 'image/png' || (file.name || '').toLowerCase().endsWith('.png');
+  const mime = isPng ? 'image/png' : 'image/jpeg';
+
+  let scale = 1;
+  let width = img.naturalWidth || img.width;
+  let height = img.naturalHeight || img.height;
+  let quality = 0.92;
+  let blob = null;
+
+  for (let i = 0; i < 10; i += 1) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    blob = await canvasToBlob(canvas, mime, mime === 'image/jpeg' ? quality : undefined);
+    if (blob.size <= targetBytes) break;
+    if (mime === 'image/jpeg' && quality > 0.55) quality -= 0.08;
+    else scale *= 0.8;
+  }
+
+  if (!blob || blob.size > MAX_IMAGE_BYTES) {
+    return { file, changed: false };
+  }
+
+  const newName = file.name ? file.name.replace(/\.(png|jpe?g)$/i, '') + (isPng ? '.png' : '.jpg') : (isPng ? 'carrier.png' : 'carrier.jpg');
+  const compressed = new File([blob], newName, { type: mime });
+  return { file: compressed, changed: true };
+}
+
+function assignFileToInput(inputEl, file) {
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  inputEl.files = dt.files;
+  inputEl.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 function formatDurationMs(ms) {
@@ -333,7 +404,7 @@ function bindFileLabel(inputEl, labelEl, emptyLabel) {
   if (!inputEl || !labelEl) return;
   const update = () => {
     const file = inputEl.files && inputEl.files[0] ? inputEl.files[0] : null;
-    const name = file ? `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} mb)` : emptyLabel;
+    const name = file ? `${file.name} (${formatFileSize(file.size)})` : emptyLabel;
     labelEl.textContent = name;
   };
   inputEl.addEventListener('change', update);
@@ -343,6 +414,87 @@ function bindFileLabel(inputEl, labelEl, emptyLabel) {
 bindFileLabel(carrierInput, carrierFilename, 'no photo chosen');
 bindFileLabel(analyzeInput, analyzeFilename, 'no photo chosen');
 bindFileLabel(payloadFileInput, payloadFileName, 'no file');
+
+const carrierUrlInput = document.getElementById('carrier-url');
+const carrierUrlButton = document.getElementById('carrier-url-fetch');
+const carrierUrlStatus = document.getElementById('carrier-url-status');
+
+function setCarrierUrlStatus(text) {
+  if (carrierUrlStatus) carrierUrlStatus.textContent = text ? stylizeUi(text) : '';
+}
+
+async function fetchCarrierFromUrl(rawUrl) {
+  const url = (rawUrl || '').trim();
+  if (!url) return;
+  try {
+    const u = new URL(url);
+    if (!['http:', 'https:', 'data:'].includes(u.protocol)) {
+      throw new Error('only http(s) or data urls are allowed');
+    }
+  } catch (err) {
+    setCarrierUrlStatus(`invalid url: ${err.message || err}`);
+    return;
+  }
+  setCarrierUrlStatus('fetching website image…');
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) throw new Error(`http ${res.status}`);
+    const blob = await res.blob();
+    const mime = blob.type && ALLOWED_IMAGE_TYPES.has(blob.type) ? blob.type : 'image/png';
+    const ext = mime === 'image/jpeg' ? '.jpg' : '.png';
+    const parts = url.split('/');
+    const baseName = (parts[parts.length - 1] || 'remote').split('?')[0].split('#')[0] || 'remote';
+    const name = baseName.match(/\.(png|jpe?g)$/i) ? baseName : `${baseName}${ext}`;
+    const file = new File([blob], name, { type: mime });
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setCarrierUrlStatus('remote file is not a png/jpeg image');
+      return;
+    }
+    const { file: finalFile, changed } = await compressImageFile(file);
+    assignFileToInput(carrierInput, finalFile);
+    setCarrierUrlStatus(changed ? `loaded and compressed to ${formatFileSize(finalFile.size)}` : `loaded ${formatFileSize(finalFile.size)}`);
+  } catch (err) {
+    setCarrierUrlStatus(`fetch failed: ${err.message || err}. remote site may block cross-origin.`);
+  }
+}
+
+if (carrierUrlButton) {
+  carrierUrlButton.addEventListener('click', () => fetchCarrierFromUrl(carrierUrlInput?.value));
+}
+if (carrierUrlInput) {
+  carrierUrlInput.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      fetchCarrierFromUrl(carrierUrlInput.value);
+    }
+  });
+}
+
+async function autoCompressCarrier() {
+  if (!carrierInput || !carrierInput.files || !carrierInput.files[0]) return;
+  const file = carrierInput.files[0];
+  if (!ALLOWED_IMAGE_TYPES.has(file.type) && !hasSupportedExtension(file.name)) return;
+  if (file.size <= AUTO_COMPRESS_TARGET_BYTES) return;
+  try {
+    const { file: compressed, changed } = await compressImageFile(file);
+    if (changed) {
+      assignFileToInput(carrierInput, compressed);
+    }
+  } catch (err) {
+    console.warn('auto-compress failed', err);
+  }
+}
+
+if (carrierInput) {
+  carrierInput.addEventListener('change', (ev) => {
+    if (ev.isTrusted) autoCompressCarrier();
+    const file = carrierInput.files && carrierInput.files[0];
+    if (file && pngFormatRadio && !pngFormatRadio.disabled) {
+      const isPng = file.type === 'image/png' || (file.name || '').toLowerCase().endsWith('.png');
+      if (isPng) pngFormatRadio.checked = true;
+    }
+  });
+}
 
 function toggleChannelBodies() {
   document.querySelectorAll('#advanced-grid .channel-card').forEach((card) => {

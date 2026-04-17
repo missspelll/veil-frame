@@ -648,6 +648,30 @@ input[type="file"] {
 }
 .file-control.slim { align-items: center; gap: 6px; }
 
+.url-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 8px;
+}
+.url-control input[type="url"] {
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.url-control input[type="url"]::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
 textarea { resize: vertical; }
 
 .inline {

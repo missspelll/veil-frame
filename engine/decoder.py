@@ -658,29 +658,32 @@ def run_analysis(
                 },
             }
 
-        try:
-            simple_rgb_text, channel_texts = extract_plane_payloads(image_path)
-        except Exception as exc:
-            print(f"Warning: Failed to decode plane payloads: {str(exc)}")
-            simple_rgb_text = ""
-            channel_texts = {
-                "red_plane": "",
-                "green_plane": "",
-                "blue_plane": "",
-                "alpha_plane": "",
-            }
+        if profile.profile_id == "simple":
+            plane_results: Dict[str, Any] = {}
+        else:
+            try:
+                simple_rgb_text, channel_texts = extract_plane_payloads(image_path)
+            except Exception as exc:
+                print(f"Warning: Failed to decode plane payloads: {str(exc)}")
+                simple_rgb_text = ""
+                channel_texts = {
+                    "red_plane": "",
+                    "green_plane": "",
+                    "blue_plane": "",
+                    "alpha_plane": "",
+                }
 
-        plane_results = plane_payload_results(simple_rgb_text, channel_texts)
-        update_data(output_dir, plane_results)
+            plane_results = plane_payload_results(simple_rgb_text, channel_texts)
+            update_data(output_dir, plane_results)
 
-        _run_decode_options(
-            image_path,
-            output_dir,
-            password=password,
-            deep_analysis=profile.run_decode_deep,
-            spread_enabled=spread_enabled,
-            input_mime=input_mime,
-        )
+            _run_decode_options(
+                image_path,
+                output_dir,
+                password=password,
+                deep_analysis=profile.run_decode_deep,
+                spread_enabled=spread_enabled,
+                input_mime=input_mime,
+            )
 
         plan = _build_analyzer_plan(
             image_path,
